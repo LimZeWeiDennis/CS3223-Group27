@@ -19,8 +19,7 @@ public class Sort {
     public Sort(Expression fld, String sortType){
         flds.add(fld);
         sortTypes.add(sortType);
-//        this.fld = fld;
-//        this.sortType = sortType;
+
     }
 
     /**
@@ -37,7 +36,7 @@ public class Sort {
      * Return true if the expression is a field reference.
      * @return true if the expression denotes a field
      */
-    public boolean isFieldName() {
+    public boolean hasField() {
         return !flds.isEmpty();
     }
 
