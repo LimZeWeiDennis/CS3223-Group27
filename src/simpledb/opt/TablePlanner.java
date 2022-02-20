@@ -147,9 +147,6 @@ class TablePlanner {
             Plan p = new MergeJoinPlan(tx, myplan, current, fldname, outerfield, sort);
             p = addSelectPred(p);
             p = addJoinPred(p, currsch);
-
-            System.out.println("mergeJoin plan being used now");
-            System.out.println(p.blocksAccessed());
             return p;
          }
       }
