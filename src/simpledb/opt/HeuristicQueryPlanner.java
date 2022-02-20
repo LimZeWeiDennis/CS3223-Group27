@@ -50,7 +50,10 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 4.  Project on the field names and return
 //      return new ProjectPlan(currentplan, data.fields());
-      currentplan = new SortPlan(tx, currentplan, data.fields(), data.sort());
+      if(data.sort().isFieldName()){
+         currentplan = new SortPlan(tx, currentplan, data.fields(), data.sort());
+      }
+
 
 
       return new ProjectPlan(currentplan, data.fields());
