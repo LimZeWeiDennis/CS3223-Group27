@@ -122,9 +122,6 @@ public class SortPlan implements Plan {
    }
    
    private TempTable mergeTwoRuns(TempTable p1, TempTable p2) {
-
-      System.out.println("merging two runs now!");
-
       Scan src1 = p1.open();
       Scan src2 = p2.open();
       TempTable result = new TempTable(tx, sch);
