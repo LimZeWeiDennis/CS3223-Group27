@@ -35,7 +35,7 @@ public class Sort {
      * Return true if the expression is a field reference.
      * @return true if the expression denotes a field
      */
-    public boolean isFieldName() {
+    public boolean hasField() {
         return !flds.isEmpty();
     }
 

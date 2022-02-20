@@ -64,7 +64,7 @@ class TablePlanner {
     * @return a join plan of the plan and this table
     */
    public Plan makeJoinPlan(Plan current) {
-      System.out.println("making a joing plan");
+
       Schema currsch = current.schema();
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
@@ -133,10 +133,7 @@ class TablePlanner {
          if(outerfield != null && currsch.hasField(outerfield)){
             Plan p = new MergeJoinPlan(tx, myplan, current, fldname, outerfield);
             p = addSelectPred(p);
-//            p = addJoinPred(p, currsch);
-
-            System.out.println("mergeJoin plan being used now");
-            System.out.println(p.blocksAccessed());
+            p = addJoinPred(p, currsch);
             return p;
          }
       }
