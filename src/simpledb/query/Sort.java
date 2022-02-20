@@ -19,8 +19,6 @@ public class Sort {
     public Sort(Expression fld, String sortType){
         flds.add(fld);
         sortTypes.add(sortType);
-//        this.fld = fld;
-//        this.sortType = sortType;
     }
 
     /**

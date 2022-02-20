@@ -9,23 +9,13 @@ import simpledb.query.*;
  * @author Edward Sciore
  */
 public class RecordComparator implements Comparator<Scan> {
-   private List<String> fields;
    private Sort sort;
-//   private String field;
-   
    /**
     * Create a comparator using the specified fields,
     * using the ordering implied by its iterator.
-    * @param fields a list of field names
+    * @param sort a list of field names and the sort order
     */
-   public RecordComparator(List<String> fields) {
-
-      this.fields = fields;
-      this.sort = null;
-   }
-
-   public RecordComparator(List<String> fields, Sort sort) {
-      this.fields = fields;
+   public RecordComparator(Sort sort) {
       this.sort = sort;
    }
    
@@ -42,43 +32,24 @@ public class RecordComparator implements Comparator<Scan> {
     * @return the result of comparing each scan's current record according to the field list
     */
    public int compare(Scan s1, Scan s2) {
+      List<Expression> sortFields = sort.getFlds();
+      List<String> sortTypes= sort.getSortTypes();
 
-      if(sort != null && sort.isSortOrder()){
+      for(int i = 0; i < sortFields.size() ; i ++){
+         Constant val1 = s1.getVal(sortFields.get(i).toString());
+         Constant val2 = s2.getVal(sortFields.get(i).toString());
 
-         List<Expression> sortFields = sort.getFlds();
-         List<String> sortTypes= sort.getSortTypes();
+         int result = 0;
 
-         for(int i = 0; i < sortFields.size() ; i ++){
-            Constant val1 = s1.getVal(sortFields.get(i).toString());
-            Constant val2 = s2.getVal(sortFields.get(i).toString());
-
-            int result = 0;
-
-            if(sortTypes.get(i) == "desc"){
-               result = val2.compareTo(val1);
-            } else {
-               result = val1.compareTo(val2);
-            }
-
-            if (result != 0)
-               return result;
+         if(sortTypes.get(i) == "desc"){
+            result = val2.compareTo(val1);
+         } else {
+            result = val1.compareTo(val2);
          }
 
-      } else {
-
-         for (String fldname : fields) {
-            Constant val1 = s1.getVal(fldname);
-            Constant val2 = s2.getVal(fldname);
-            int result = val1.compareTo(val2);
-            if (result != 0)
-               return result;
-         }
+         if (result != 0)
+            return result;
       }
-
-
-
-
-
       return 0;
    }
 }

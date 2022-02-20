@@ -13,7 +13,6 @@ import java.util.*;
  */
 public class MergeJoinPlan implements Plan {
    private Plan p1, p2;
-//   private List<String> fldList1, fldList2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
    
@@ -27,14 +26,12 @@ public class MergeJoinPlan implements Plan {
     * @param fldname2 the RHS join fields
     * @param tx the calling transaction
     */
-   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String  fldname2, Sort sort) {
+   public MergeJoinPlan(Transaction tx, Plan p1, Plan p2, String fldname1, String  fldname2) {
       this.fldname1 = fldname1;
-      List<String> sortlist1 = Arrays.asList(fldname1);
-      this.p1 = new SortPlan(tx, p1, sortlist1, sort);
-      
+      this.p1 = new SortPlan(tx, p1, new Sort(new Expression(fldname1), "asc"));
+
       this.fldname2 = fldname2;
-      List<String> sortlist2 = Arrays.asList(fldname2);
-      this.p2 = new SortPlan(tx, p2, sortlist2, sort);
+      this.p2 = new SortPlan(tx, p2, new Sort(new Expression(fldname2), "asc"));
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());

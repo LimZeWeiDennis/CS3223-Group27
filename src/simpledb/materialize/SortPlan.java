@@ -19,14 +19,14 @@ public class SortPlan implements Plan {
    /**
     * Create a sort plan for the specified query.
     * @param p the plan for the underlying query
-    * @param sortfields the fields to sort by
+    * @param sort the fields to sort by and its corresponding order
     * @param tx the calling transaction
     */
-   public SortPlan(Transaction tx, Plan p, List<String> sortfields, Sort sort) {
+   public SortPlan(Transaction tx, Plan p, Sort sort) {
       this.tx = tx;
       this.p = p;
       sch = p.schema();
-      comp = new RecordComparator(sortfields, sort);
+      comp = new RecordComparator(sort);
 
    }
    

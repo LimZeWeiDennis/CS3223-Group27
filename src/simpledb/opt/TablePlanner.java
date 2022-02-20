@@ -23,8 +23,7 @@ class TablePlanner {
    private Schema myschema;
    private Map<String,IndexInfo> indexes;
    private Transaction tx;
-   private Sort sort;
-   
+
    /**
     * Creates a new table planner.
     * The specified predicate applies to the entire query.
@@ -41,16 +40,6 @@ class TablePlanner {
       myplan   = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
       indexes  = mdm.getIndexInfo(tblname, tx);
-   }
-
-
-   public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm, Sort sort) {
-      this.mypred  = mypred;
-      this.tx  = tx;
-      myplan   = new TablePlan(tx, tblname, mdm);
-      myschema = myplan.schema();
-      indexes  = mdm.getIndexInfo(tblname, tx);
-      this.sort = sort;
    }
    
    /**
@@ -84,8 +73,10 @@ class TablePlanner {
       List<Plan> planList = new ArrayList<>();
       Plan indexJoinPlan = makeIndexJoin(current, currsch, joinpred);
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
-//      planList.add(indexJoinPlan);
+      Plan productJoinPlan = makeProductJoin(current, currsch);
+      planList.add(indexJoinPlan);
       planList.add(mergeJoinPlan);
+      planList.add(productJoinPlan);
 
       for(Plan plan : planList){
          if(plan == null) continue;
@@ -93,12 +84,6 @@ class TablePlanner {
             p = plan;
          }
       }
-      p = mergeJoinPlan;
-
-      if (planList.isEmpty() || p == null)
-         p = makeProductJoin(current, currsch);
-
-      System.out.println("returning a join plan");
       return p;
    }
    
@@ -146,7 +131,7 @@ class TablePlanner {
       for(String fldname: myschema.fields()){
          String outerfield = pred.equatesWithField(fldname);
          if(outerfield != null && currsch.hasField(outerfield)){
-            Plan p = new MergeJoinPlan(tx, myplan, current, fldname, outerfield, sort);
+            Plan p = new MergeJoinPlan(tx, myplan, current, fldname, outerfield);
             p = addSelectPred(p);
 //            p = addJoinPred(p, currsch);
 

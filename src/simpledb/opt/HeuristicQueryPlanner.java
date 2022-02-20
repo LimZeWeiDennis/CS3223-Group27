@@ -31,8 +31,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
-//         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
-         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm, data.sort());
+         TablePlanner tp = new TablePlanner(tblname, data.pred(), tx, mdm);
          tableplanners.add(tp);
       }
       
@@ -48,11 +47,10 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             currentplan = getLowestProductPlan(currentplan);
       }
       
-      // Step 4.  Project on the field names and return
-//      return new ProjectPlan(currentplan, data.fields());
-      currentplan = new SortPlan(tx, currentplan, data.fields(), data.sort());
+      // Step 4.  Sort the table if there is an order by clause
+      currentplan = new SortPlan(tx, currentplan, data.sort());
 
-
+      // Step 5.  Project on the field names and return
       return new ProjectPlan(currentplan, data.fields());
    }
 
