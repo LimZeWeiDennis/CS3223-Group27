@@ -12,15 +12,17 @@ public class QueryData {
    private List<String> fields;
    private Collection<String> tables;
    private Predicate pred;
+   private List<String> groupByFields;
    private Sort sort;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, Sort sort) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields, Sort sort) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
+      this.groupByFields = groupByFields;
       this.sort = sort;
    }
    
@@ -50,6 +52,14 @@ public class QueryData {
    }
 
    /**
+    * Returns the list of fields in the Group By clause.
+    * @return the list of fields in the Group By clause.
+    */
+   public List<String> groupByFields() {
+      return groupByFields;
+   }
+
+   /**
     * Returns the sort that describes which
     * which order by which field.
     * @return the query sort
@@ -71,7 +81,11 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
-
+      if (!groupByFields.isEmpty())
+         result += " group by ";
+      for (String field : groupByFields)
+         result += field + ", ";
+      result = result.substring(0, result.length()-2); //remove final comma
       String sortString = sort.toString();
       result += sortString;
 

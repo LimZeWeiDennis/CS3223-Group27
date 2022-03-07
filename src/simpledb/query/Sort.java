@@ -21,6 +21,11 @@ public class Sort {
         sortTypes.add(sortType);
     }
 
+    public Sort(List<Expression> fieldList, List<String> sortTypes) {
+        this.flds = fieldList;
+        this.sortTypes = sortTypes;
+    }
+
     /**
      * Modifies the sort to be the conjunction of
      * itself and the specified sort.
