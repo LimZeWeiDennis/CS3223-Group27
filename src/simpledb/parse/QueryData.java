@@ -81,11 +81,12 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
-      if (!groupByFields.isEmpty())
+      if (!groupByFields.isEmpty()) {
          result += " group by ";
-      for (String field : groupByFields)
-         result += field + ", ";
-      result = result.substring(0, result.length()-2); //remove final comma
+         for (String field : groupByFields)
+            result += field + ", ";
+         result = result.substring(0, result.length()-2); //remove final comma
+      }
       String sortString = sort.toString();
       result += sortString;
 
