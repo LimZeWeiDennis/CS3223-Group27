@@ -1,5 +1,6 @@
 package simpledb.parse;
 
+import java.sql.Array;
 import java.util.*;
 
 import simpledb.materialize.*;
@@ -77,6 +78,14 @@ public class Parser {
       return pred;
    }
 
+   public List<String> groupBy() {
+      if (lex.matchKeyword("group")) {
+         return lex.eatGroupBy();
+      }
+      // Return empty list if no group by fields
+      return new ArrayList<>();
+   }
+
    //method that creates a sort object
    public Sort sort() {
 
@@ -109,6 +118,9 @@ public class Parser {
          pred = predicate();
       }
 
+      // "group by" after "where" and before "order by"
+      List<String> groupByFields = groupBy();
+
       // must "where" first before "order by"
       // think about how to include multiple sorts
       Sort sort = new Sort();
@@ -118,7 +130,7 @@ public class Parser {
          sort = sort();
 
       }
-      return new QueryData(fields, tables, pred, sort);
+      return new QueryData(fields, tables, pred, groupByFields, sort);
    }
    
    private List<Field> selectList() {

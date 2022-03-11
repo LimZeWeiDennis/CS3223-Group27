@@ -269,7 +269,19 @@ public class Lexer {
       }
       throw new BadSyntaxException();
    }
-   
+
+   public List<String> eatGroupBy() {
+      List<String> groupByList = new ArrayList<>();
+      eatKeyword("group");
+      eatKeyword("by");
+      groupByList.add(eatId());
+      while (matchDelim(',')) {
+         eatDelim(',');
+         groupByList.add(eatId());
+      }
+      return groupByList;
+   }
+
    private void nextToken() {
       try {
          tok.nextToken();
@@ -286,6 +298,6 @@ public class Lexer {
                                "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index",
                                "on", "using", "order", "by", "asc", "desc", "sum", "count",
-                               "avg", "min", "max");
+                               "avg", "min", "max", "group");
    }
 }

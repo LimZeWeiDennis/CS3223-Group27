@@ -33,7 +33,7 @@ public class GroupByPlan implements Plan {
       this.aggfns = aggfns;
       this.sch = p.schema();
       for (String fldname : groupfields)
-         sch.add(fldname, p.schema());
+         sch.add(fldname, p.schema()); // every groupby field must be part of the schema
       for (AggregationFn fn : aggfns)
          sch.addIntField(fn.fieldName());
    }
@@ -45,7 +45,7 @@ public class GroupByPlan implements Plan {
     * @see simpledb.plan.Plan#open()
     */
    public Scan open() {
-      Scan s = p.open();
+      Scan s = p.open(); // this should sort the table before grouping
       return new GroupByScan(s, groupfields, aggfns);
    }
    
