@@ -11,28 +11,33 @@ import simpledb.query.*;
  * @author Edward Sciore
  */
 public class QueryData {
-   private List<Field> fields;
+   private List<String> fields;
    private Collection<String> tables;
    private Predicate pred;
    private List<String> groupByFields;
+   private List<AggregationFn> aggFns;
+   private List<Field> originalSelect;
    private Sort sort;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields, Sort sort) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields,
+                    List<AggregationFn> aggFns, Sort sort, List<Field> originalSelect) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
       this.groupByFields = groupByFields;
+      this.aggFns = aggFns;
       this.sort = sort;
+      this.originalSelect = originalSelect;
    }
    
    /**
     * Returns the fields mentioned in the select clause.
     * @return a list of field names
     */
-   public List<Field> fields() {
+   public List<String> fields() {
       return fields;
    }
    
@@ -62,6 +67,14 @@ public class QueryData {
    }
 
    /**
+    * Returns the list of agg functions in the select clause.
+    * @return the list of fields in the select clause.
+    */
+   public List<AggregationFn> aggFnsFields() {
+      return aggFns;
+   }
+
+   /**
     * Returns the sort that describes which
     * which order by which field.
     * @return the query sort
@@ -73,8 +86,8 @@ public class QueryData {
    
    public String toString() {
       String result = "select ";
-      for (Field fldname : fields) {
-         result += fldname.fieldName() + ", ";
+      for (Field orgSelect: originalSelect) {
+         result += orgSelect.fieldName() + ", ";
       }
       result = result.substring(0, result.length()-2); //remove final comma
       result += " from ";

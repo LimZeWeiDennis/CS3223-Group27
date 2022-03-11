@@ -264,6 +264,7 @@ public class Lexer {
       String[] aggTypes = new String[] { "sum", "count", "avg", "min", "max" };
       for (String agg: aggTypes) {
          if (matchKeyword(agg)) {
+            eatKeyword(agg);
             return agg;
          }
       }

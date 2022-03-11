@@ -1,8 +1,6 @@
 package simpledb.plan;
 
 import java.util.List;
-
-import simpledb.materialize.Field;
 import simpledb.record.Schema;
 import simpledb.query.*;
 
@@ -18,12 +16,12 @@ public class ProjectPlan implements Plan {
     * Creates a new project node in the query tree,
     * having the specified subquery and field list.
     * @param p the subquery
-    * @param fieldlist the list of fields and aggregate
+    * @param fieldlist the list of fields
     */
-   public ProjectPlan(Plan p, List<Field> fieldlist) {
+   public ProjectPlan(Plan p, List<String> fieldlist) {
       this.p = p;
-      for (Field field : fieldlist)
-         schema.add(field, p.schema());
+      for (String fldname : fieldlist)
+         schema.add(fldname, p.schema());
    }
 
    /**
