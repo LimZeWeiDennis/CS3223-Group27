@@ -2,6 +2,7 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.*;
 import simpledb.query.*;
 import simpledb.record.*;
 
@@ -18,9 +19,29 @@ public class Parser {
    }
    
 // Methods for parsing predicates, terms, expressions, constants, and fields
-   
    public String field() {
       return lex.eatId();
+   }
+
+   public Field selectField() {
+      if (lex.matchAggFn()) {
+         String aggType = lex.eatAgg();
+         lex.eatDelim('(');
+         String fldname = lex.eatId();
+         lex.eatDelim(')');
+         if (aggType.equals("sum")) {
+            return new SumFn(fldname);
+         } else if (aggType.equals("count")) {
+            return new CountFn(fldname);
+         } else if (aggType.equals("avg")) {
+            return new AvgFn(fldname);
+         } else if (aggType.equals("min")) {
+            return new MinFn(fldname);
+         } else { // max
+            return new MaxFn(fldname);
+         }
+      }
+      return new DefaultField(lex.eatId());
    }
    
    public Constant constant() {
@@ -79,7 +100,7 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> fields = selectList();
+      List<Field> fields = selectList();
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
@@ -100,9 +121,9 @@ public class Parser {
       return new QueryData(fields, tables, pred, sort);
    }
    
-   private List<String> selectList() {
-      List<String> L = new ArrayList<String>();
-      L.add(field());
+   private List<Field> selectList() {
+      List<Field> L = new ArrayList<>();
+      L.add(selectField());
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
          L.addAll(selectList());

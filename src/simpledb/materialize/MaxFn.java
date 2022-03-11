@@ -53,4 +53,9 @@ public class MaxFn implements AggregationFn {
    public Constant value() {
       return val;
    }
+
+   @Override
+   public boolean isAggregate() {
+      return true;
+   }
 }

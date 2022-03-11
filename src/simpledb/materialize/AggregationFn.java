@@ -7,7 +7,7 @@ import simpledb.query.*;
  * Aggregation functions are used by the <i>groupby</i> operator.
  * @author Edward Sciore
  */
-public interface AggregationFn {
+public interface AggregationFn extends Field {
    
    /**
     * Use the current record of the specified scan
@@ -22,13 +22,13 @@ public interface AggregationFn {
     * @param s the scan to aggregate over.
     */
    void processNext(Scan s);
-   
+
    /**
     * Return the name of the new aggregation field.
     * @return the name of the new aggregation field
     */
    String fieldName();
-   
+
    /**
     * Return the computed aggregation value.
     * @return the computed aggregation value

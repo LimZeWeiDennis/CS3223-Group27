@@ -82,7 +82,16 @@ public class Lexer {
 
    }
 
-//Methods to "eat" the current token
+   /**
+    * Returns true if the current token is a legal aggregate keyword.
+    * @return true if the current token is a legal aggregate keyword
+    */
+   public boolean matchAggFn() {
+      String[] aggTypes = new String[] { "sum", "count", "avg", "min", "max" };
+      return Arrays.stream(aggTypes).anyMatch(this::matchKeyword);
+   }
+
+   // Methods to "eat" the current token
    
    /**
     * Throws an exception if the current token is not the
@@ -236,7 +245,7 @@ public class Lexer {
     * and moves to the next token.
     */
    public String eatSort() {
-      String res ;
+      String res;
       if(matchKeyword("desc")){
          eatKeyword("desc");
          res = "desc";
@@ -249,6 +258,16 @@ public class Lexer {
       }
 
       return res;
+   }
+
+   public String eatAgg() {
+      String[] aggTypes = new String[] { "sum", "count", "avg", "min", "max" };
+      for (String agg: aggTypes) {
+         if (matchKeyword(agg)) {
+            return agg;
+         }
+      }
+      throw new BadSyntaxException();
    }
    
    private void nextToken() {
@@ -266,6 +285,7 @@ public class Lexer {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index",
-                               "on", "using", "order", "by", "asc", "desc");
+                               "on", "using", "order", "by", "asc", "desc", "sum", "count",
+                               "avg", "min", "max");
    }
 }

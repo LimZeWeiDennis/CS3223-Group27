@@ -2,6 +2,8 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
+import simpledb.materialize.Field;
 import simpledb.query.*;
 
 /**
@@ -9,7 +11,7 @@ import simpledb.query.*;
  * @author Edward Sciore
  */
 public class QueryData {
-   private List<String> fields;
+   private List<Field> fields;
    private Collection<String> tables;
    private Predicate pred;
    private Sort sort;
@@ -17,7 +19,7 @@ public class QueryData {
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, Sort sort) {
+   public QueryData(List<Field> fields, Collection<String> tables, Predicate pred, Sort sort) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
@@ -28,7 +30,7 @@ public class QueryData {
     * Returns the fields mentioned in the select clause.
     * @return a list of field names
     */
-   public List<String> fields() {
+   public List<Field> fields() {
       return fields;
    }
    
@@ -61,8 +63,9 @@ public class QueryData {
    
    public String toString() {
       String result = "select ";
-      for (String fldname : fields)
-         result += fldname + ", ";
+      for (Field fldname : fields) {
+         result += fldname.fieldName() + ", ";
+      }
       result = result.substring(0, result.length()-2); //remove final comma
       result += " from ";
       for (String tblname : tables)
