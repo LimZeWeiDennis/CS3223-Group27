@@ -123,17 +123,20 @@ public class Parser {
 
       List<String> selectFields = new ArrayList<>();
       List<AggregationFn> aggFns = new ArrayList<>();
-      for (Field field: fields) { // processing the aggregate functions
+
+      for (Field field : fields) { // processing the aggregate functions
          selectFields.add(field.fieldName());
          if (field.isAggregate()) {
             aggFns.add((AggregationFn) field);
             continue;
          }
 
-         // not correct since field.fieldName prepends the fn name infront of the field
-         boolean defaultSelectExistInGB = groupByFields.stream().anyMatch(x -> x.equals(field.fieldName()));
-         if (!defaultSelectExistInGB) { // all non aggregate select fields must appear in group by fields,
-            throw new BadSyntaxException(); // Throws error if there is a violation
+         if (groupByFields.size() > 0) { // only does the checks if group by clause exists and for non-aggregate fields
+            // not correct since field.fieldName prepends the fn name infront of the field
+            boolean defaultSelectExistInGB = groupByFields.stream().anyMatch(x -> x.equals(field.fieldName()));
+            if (!defaultSelectExistInGB) { // all non aggregate select fields must appear in group by fields,
+               throw new BadSyntaxException(); // Throws error if there is a violation
+            }
          }
       }
 
