@@ -123,12 +123,18 @@ public class Parser {
 
       List<String> selectFields = new ArrayList<>();
       List<AggregationFn> aggFns = new ArrayList<>();
+      boolean hasAggregate = false;
 
       for (Field field : fields) { // processing the aggregate functions
          selectFields.add(field.fieldName());
          if (field.isAggregate()) {
+            hasAggregate = true;
             aggFns.add((AggregationFn) field);
             continue;
+         }
+
+         if (groupByFields.size() == 0 && hasAggregate) { // has aggregate and another non aggregate field
+            throw new BadSyntaxException(); // Throws error if there is a violation
          }
 
          if (groupByFields.size() > 0) { // only does the checks if group by clause exists and for non-aggregate fields
