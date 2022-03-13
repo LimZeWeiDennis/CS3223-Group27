@@ -84,7 +84,7 @@ public class GroupByScan implements Scan {
     * appropriate aggregation function.
     * @see simpledb.query.Scan#getVal(java.lang.String)
     */
-   public Constant getVal(String fldname) {
+   public Constant getVal(String fldname) { // all fields in the schema must be in groupBy or be aggregated
       if (groupfields.contains(fldname))
          return groupval.getVal(fldname);
       for (AggregationFn fn : aggfns)

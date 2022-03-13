@@ -250,6 +250,18 @@ public class Lexer {
 
       return res;
    }
+
+   public List<String> eatGroupBy() {
+      List<String> groupByList = new ArrayList<>();
+      eatKeyword("group");
+      eatKeyword("by");
+      groupByList.add(eatId());
+      while (matchDelim(',')) {
+         eatDelim(',');
+         groupByList.add(eatId());
+      }
+      return groupByList;
+   }
    
    private void nextToken() {
       try {
@@ -266,6 +278,7 @@ public class Lexer {
       keywords = Arrays.asList("select", "from", "where", "and",
                                "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index",
-                               "on", "using", "order", "by", "asc", "desc");
+                               "on", "using", "order", "by", "asc", "desc",
+                               "group", "by");
    }
 }
