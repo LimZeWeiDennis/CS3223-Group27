@@ -40,7 +40,7 @@ public class SortPlan implements Plan {
       Scan src = p.open();
       List<TempTable> runs = splitIntoRuns(src);
       src.close();
-      while (runs.size() > 2)
+      while (runs.size() >= 2)
          runs = doAMergeIteration(runs);
       return new SortScan(runs, comp);
    }

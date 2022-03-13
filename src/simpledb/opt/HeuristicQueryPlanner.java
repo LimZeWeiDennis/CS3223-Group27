@@ -65,7 +65,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          Sort s = new Sort(exprs, sortTypes);
 
          // TODO: replace empty list aggfns
-         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), new ArrayList<>(), s);
+         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
+      }
+
+      if (data.groupByFields().isEmpty() && data.aggFnsFields().size() > 0) { // aggFn without groupBy clause
+         Sort s = new Sort(new ArrayList<>(), new ArrayList<>());
+         currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
       }
 
       // Step 4.  Sort the table if there is an order by clause

@@ -31,6 +31,7 @@ public class GroupByPlan implements Plan {
       this.p = new SortPlan(tx, p, sort); // TODO to be changed later
       this.groupfields = groupfields;
       this.aggfns = aggfns;
+//      this.sch = p.schema();
       for (String fldname : groupfields)
          sch.add(fldname, p.schema()); // every groupby field must be part of the schema
       for (AggregationFn fn : aggfns)

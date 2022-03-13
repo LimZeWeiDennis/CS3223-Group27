@@ -2,6 +2,8 @@ package simpledb.parse;
 
 import java.util.*;
 
+import simpledb.materialize.AggregationFn;
+import simpledb.materialize.Field;
 import simpledb.query.*;
 
 /**
@@ -13,17 +15,22 @@ public class QueryData {
    private Collection<String> tables;
    private Predicate pred;
    private List<String> groupByFields;
+   private List<AggregationFn> aggFns;
+   private List<Field> originalSelect;
    private Sort sort;
    
    /**
     * Saves the field and table list and predicate.
     */
-   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields, Sort sort) {
+   public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields,
+                    List<AggregationFn> aggFns, Sort sort, List<Field> originalSelect) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
       this.groupByFields = groupByFields;
+      this.aggFns = aggFns;
       this.sort = sort;
+      this.originalSelect = originalSelect;
    }
    
    /**
@@ -60,6 +67,14 @@ public class QueryData {
    }
 
    /**
+    * Returns the list of agg functions in the select clause.
+    * @return the list of fields in the select clause.
+    */
+   public List<AggregationFn> aggFnsFields() {
+      return aggFns;
+   }
+
+   /**
     * Returns the sort that describes which
     * which order by which field.
     * @return the query sort
@@ -71,8 +86,9 @@ public class QueryData {
    
    public String toString() {
       String result = "select ";
-      for (String fldname : fields)
-         result += fldname + ", ";
+      for (Field orgSelect: originalSelect) {
+         result += orgSelect.fieldName() + ", ";
+      }
       result = result.substring(0, result.length()-2); //remove final comma
       result += " from ";
       for (String tblname : tables)
@@ -81,7 +97,7 @@ public class QueryData {
       String predstring = pred.toString();
       if (!predstring.equals(""))
          result += " where " + predstring;
-      if (!groupByFields.isEmpty()) {
+      if (!groupByFields.isEmpty()) { // to look at now
          result += " group by ";
          for (String field : groupByFields)
             result += field + ", ";

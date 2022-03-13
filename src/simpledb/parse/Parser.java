@@ -3,6 +3,7 @@ package simpledb.parse;
 import java.sql.Array;
 import java.util.*;
 
+import simpledb.materialize.*;
 import simpledb.query.*;
 import simpledb.record.*;
 
@@ -19,9 +20,29 @@ public class Parser {
    }
    
 // Methods for parsing predicates, terms, expressions, constants, and fields
-   
    public String field() {
       return lex.eatId();
+   }
+
+   public Field selectField() { // previous checks ensures
+      if (lex.matchAggFn()) {
+         String aggType = lex.eatAgg();
+         lex.eatDelim('(');
+         String fldname = lex.eatId();
+         lex.eatDelim(')');
+         if (aggType.equals("sum")) { // previous checks ensures that a valid group by exists
+            return new SumFn(fldname);
+         } else if (aggType.equals("count")) {
+            return new CountFn(fldname);
+         } else if (aggType.equals("avg")) {
+            return new AvgFn(fldname);
+         } else if (aggType.equals("min")) {
+            return new MinFn(fldname);
+         } else { // max
+            return new MaxFn(fldname);
+         }
+      }
+      return new DefaultField(lex.eatId());
    }
    
    public Constant constant() {
@@ -88,7 +109,7 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
-      List<String> fields = selectList();
+      List<Field> fields = selectList(); // Can either be an aggregate function or normal field (must appear in group by)
       lex.eatKeyword("from");
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
@@ -100,6 +121,31 @@ public class Parser {
       // "group by" after "where" and before "order by"
       List<String> groupByFields = groupBy();
 
+      List<String> selectFields = new ArrayList<>();
+      List<AggregationFn> aggFns = new ArrayList<>();
+      boolean hasAggregate = false;
+
+      for (Field field : fields) { // processing the aggregate functions
+         selectFields.add(field.fieldName());
+         if (field.isAggregate()) {
+            hasAggregate = true;
+            aggFns.add((AggregationFn) field);
+            continue;
+         }
+
+         if (groupByFields.size() == 0 && hasAggregate) { // has aggregate and another non aggregate field
+            throw new BadSyntaxException(); // Throws error if there is a violation
+         }
+
+         if (groupByFields.size() > 0) { // only does the checks if group by clause exists and for non-aggregate fields
+            // not correct since field.fieldName prepends the fn name infront of the field
+            boolean defaultSelectExistInGB = groupByFields.stream().anyMatch(x -> x.equals(field.fieldName()));
+            if (!defaultSelectExistInGB) { // all non aggregate select fields must appear in group by fields,
+               throw new BadSyntaxException(); // Throws error if there is a violation
+            }
+         }
+      }
+
       // must "where" first before "order by"
       // think about how to include multiple sorts
       Sort sort = new Sort();
@@ -109,12 +155,12 @@ public class Parser {
          sort = sort();
 
       }
-      return new QueryData(fields, tables, pred, groupByFields, sort);
+      return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields);
    }
    
-   private List<String> selectList() {
-      List<String> L = new ArrayList<String>();
-      L.add(field());
+   private List<Field> selectList() {
+      List<Field> L = new ArrayList<>();
+      L.add(selectField());
       if (lex.matchDelim(',')) {
          lex.eatDelim(',');
          L.addAll(selectList());
