@@ -30,6 +30,12 @@ public interface AggregationFn extends Field {
    String fieldName();
 
    /**
+    * Return the name of the original field
+    * @return the name of the original field
+    */
+   String originalFieldName();
+
+   /**
     * Return the computed aggregation value.
     * @return the computed aggregation value
     */

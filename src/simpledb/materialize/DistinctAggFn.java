@@ -1,22 +1,25 @@
 package simpledb.materialize;
 
+import java.util.HashSet;
+import java.util.Set;
 import simpledb.query.*;
+
 
 /**
  * The <i>average</i> aggregation function.
  * @author Edward Sciore
  */
-public class AvgFn implements AggregationFn {
-    private String fldname;
-    private int count;
-    private int sum;
+public class DistinctAggFn implements AggregationFn {
+    private AggregationFn fn;
+    private Set<Constant> uniqueValues;
 
     /**
      * Create an average aggregation function for the specified field.
-     * @param fldname the name of the aggregated field
+     * @param fn the aggregate fn that needs to be distinct
      */
-    public AvgFn(String fldname) {
-        this.fldname = fldname;
+    public DistinctAggFn(AggregationFn fn) {
+        this.fn = fn;
+        uniqueValues = new HashSet<>();
     }
 
     /**
@@ -28,8 +31,9 @@ public class AvgFn implements AggregationFn {
      * @see simpledb.materialize.AggregationFn#processFirst(simpledb.query.Scan)
      */
     public void processFirst(Scan s) {
-        count = 1;
-        sum = s.getInt(fldname);
+        Constant now = s.getVal(originalFieldName());
+        uniqueValues.add(now);
+        fn.processFirst(s);
     }
 
     /**
@@ -39,8 +43,12 @@ public class AvgFn implements AggregationFn {
      * @see simpledb.materialize.AggregationFn#processNext(simpledb.query.Scan)
      */
     public void processNext(Scan s) {
-        count++;
-        sum += s.getInt(fldname);
+        Constant constant = s.getVal(originalFieldName());
+        if (uniqueValues.contains(constant)) {
+            return;
+        }
+        uniqueValues.add(constant);
+        fn.processNext(s);
     }
 
     /**
@@ -48,22 +56,21 @@ public class AvgFn implements AggregationFn {
      * @see simpledb.materialize.AggregationFn#fieldName()
      */
     public String fieldName() {
-        return "avgof" + fldname;
+        return fn.fieldName();
     }
 
-
     /**
-     * Return the field's original name
-     * @see simpledb.materialize.AggregationFn#fieldName()
+     * Return the name of the original field
+     * @return the name of the original field
      */
-    public String originalFieldName() {return fldname;}
+    public String originalFieldName() { return fn.originalFieldName();};
 
     /**
      * Return the current average score.
      * @see simpledb.materialize.AggregationFn#value()
      */
     public Constant value() {
-        return new Constant(sum / count);
+        return fn.value();
     }
 
     public boolean isAggregate() {

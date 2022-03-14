@@ -46,6 +46,12 @@ public class SumFn implements AggregationFn {
     }
 
     /**
+     * Return the field's original name
+     * @see simpledb.materialize.AggregationFn#fieldName()
+     */
+    public String originalFieldName() {return fldname;}
+
+    /**
      * Return the current sum.
      * @see simpledb.materialize.AggregationFn#value()
      */

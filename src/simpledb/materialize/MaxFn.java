@@ -45,6 +45,12 @@ public class MaxFn implements AggregationFn {
    public String fieldName() {
       return "maxof" + fldname;
    }
+
+   /**
+    * Return the field's original name
+    * @see simpledb.materialize.AggregationFn#fieldName()
+    */
+   public String originalFieldName() {return fldname;}
    
    /**
     * Return the current maximum.
