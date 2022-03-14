@@ -73,6 +73,11 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
       }
 
+      //TODO include the distinctplan
+      if(data.isDistinct()){
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+      }
+
       // Step 4.  Sort the table if there is an order by clause
       currentplan = new SortPlan(tx, currentplan, data.sort());
 

@@ -28,20 +28,31 @@ public class Parser {
       if (lex.matchAggFn()) {
          String aggType = lex.eatAgg();
          lex.eatDelim('(');
+         boolean isDistinct = distinct();
          String fldname = lex.eatId();
          lex.eatDelim(')');
+
+         AggregationFn aggFn ;
          if (aggType.equals("sum")) { // previous checks ensures that a valid group by exists
-            return new SumFn(fldname);
+            aggFn = new SumFn(fldname);
          } else if (aggType.equals("count")) {
-            return new CountFn(fldname);
+            aggFn = new CountFn(fldname);
          } else if (aggType.equals("avg")) {
-            return new AvgFn(fldname);
+            aggFn = new AvgFn(fldname);
          } else if (aggType.equals("min")) {
-            return new MinFn(fldname);
+            aggFn = new MinFn(fldname);
          } else { // max
-            return new MaxFn(fldname);
+            aggFn = new MaxFn(fldname);
          }
+
+         // checks for distinct fields within the aggregate functions
+         if(isDistinct){
+            aggFn = new DistinctAggFn(aggFn);
+         }
+
+         return aggFn;
       }
+
       return new DefaultField(lex.eatId());
    }
    
@@ -86,6 +97,16 @@ public class Parser {
       return new ArrayList<>();
    }
 
+   //checks for distinct keyword
+   public boolean distinct() {
+      if (lex.matchKeyword("distinct")) {
+         lex.eatDistinct();
+         return true;
+      }
+      // Return false if no "distinct" is detected
+      return false;
+   }
+
    //method that creates a sort object
    public Sort sort() {
 
@@ -109,10 +130,16 @@ public class Parser {
    
    public QueryData query() {
       lex.eatKeyword("select");
+
+      boolean isDistinct = distinct();
+
       List<Field> fields = selectList(); // Can either be an aggregate function or normal field (must appear in group by)
+
       lex.eatKeyword("from");
+
       Collection<String> tables = tableList();
       Predicate pred = new Predicate();
+
       if (lex.matchKeyword("where")) {
          lex.eatKeyword("where");
          pred = predicate();
@@ -131,6 +158,7 @@ public class Parser {
             hasAggregate = true;
             aggFns.add((AggregationFn) field);
             continue;
+
          }
 
          if (groupByFields.size() == 0 && hasAggregate) { // has aggregate and another non aggregate field
@@ -155,7 +183,10 @@ public class Parser {
          sort = sort();
 
       }
-      return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields);
+
+      //TODO add in distinct boolean into the querydata
+      return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields, isDistinct);
+//      return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields);
    }
    
    private List<Field> selectList() {
@@ -167,6 +198,27 @@ public class Parser {
       }
       return L;
    }
+
+//   public Field selectField() { // previous checks ensures
+//      if (lex.matchAggFn()) {
+//         String aggType = lex.eatAgg();
+//         lex.eatDelim('(');
+//         String fldname = lex.eatId();
+//         lex.eatDelim(')');
+//         if (aggType.equals("sum")) { // previous checks ensures that a valid group by exists
+//            return new SumFn(fldname);
+//         } else if (aggType.equals("count")) {
+//            return new CountFn(fldname);
+//         } else if (aggType.equals("avg")) {
+//            return new AvgFn(fldname);
+//         } else if (aggType.equals("min")) {
+//            return new MinFn(fldname);
+//         } else { // max
+//            return new MaxFn(fldname);
+//         }
+//      }
+//      return new DefaultField(lex.eatId());
+//   }
    
    private Collection<String> tableList() {
       Collection<String> L = new ArrayList<String>();

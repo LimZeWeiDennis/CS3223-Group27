@@ -271,6 +271,12 @@ public class Lexer {
       throw new BadSyntaxException();
    }
 
+   public boolean eatDistinct() {
+
+      eatKeyword("distinct");
+      return true;
+   }
+
    public List<String> eatGroupBy() {
       List<String> groupByList = new ArrayList<>();
       eatKeyword("group");
@@ -299,6 +305,6 @@ public class Lexer {
                                "insert", "into", "values", "delete", "update", "set", 
                                "create", "table", "int", "varchar", "view", "as", "index",
                                "on", "using", "order", "by", "asc", "desc", "sum", "count",
-                               "avg", "min", "max", "group");
+                               "avg", "min", "max", "group", "distinct");
    }
 }

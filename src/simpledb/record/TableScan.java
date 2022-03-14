@@ -75,9 +75,6 @@ public class TableScan implements UpdateScan {
    }
    
    public void setString(String fldname, String val) {
-//      System.out.println();
-//      System.out.println("table scan");
-//      System.out.println(val);
       rp.setString(currentslot, fldname, val);
    }
 
