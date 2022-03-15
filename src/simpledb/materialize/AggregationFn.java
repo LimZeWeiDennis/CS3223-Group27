@@ -40,4 +40,16 @@ public interface AggregationFn extends Field {
     * @return the computed aggregation value
     */
    Constant value();
+
+   /**
+    * Return a string containing the type of aggregate function
+    * @return a string containing the type of aggregate function
+    */
+   String toString();
+
+   /**
+    * Return a string containing the type of aggregate function if distinct is used in the field
+    * @return a string containing the type of aggregate function
+    */
+   String toStringDistinct();
 }

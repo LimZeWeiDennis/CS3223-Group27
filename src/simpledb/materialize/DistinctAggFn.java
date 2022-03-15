@@ -76,5 +76,9 @@ public class DistinctAggFn implements AggregationFn {
     public boolean isAggregate() {
         return true;
     }
+
+    public String toString(){ return fn.toString();}
+
+    public String toStringDistinct(){ return fn.toString();}
 }
 

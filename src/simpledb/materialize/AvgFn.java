@@ -69,5 +69,9 @@ public class AvgFn implements AggregationFn {
     public boolean isAggregate() {
         return true;
     }
+
+    public String toString(){ return "Average of :" +  originalFieldName();}
+
+    public String toStringDistinct(){ return "Average of unique :" +  originalFieldName();}
 }
 

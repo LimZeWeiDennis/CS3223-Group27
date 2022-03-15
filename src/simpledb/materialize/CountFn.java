@@ -66,4 +66,8 @@ public class CountFn implements AggregationFn {
    public boolean isAggregate() {
       return true;
    }
+
+   public String toString(){ return "Count of :" +  originalFieldName();}
+
+   public String toStringDistinct(){ return "Count of unique :" +  originalFieldName();}
 }

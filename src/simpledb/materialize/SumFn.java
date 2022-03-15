@@ -63,4 +63,8 @@ public class SumFn implements AggregationFn {
     public boolean isAggregate() {
         return true;
     }
+
+    public String toString(){ return "Sum of :" +  originalFieldName();}
+
+    public String toStringDistinct(){ return "Sum of unique :" +  originalFieldName();}
 }

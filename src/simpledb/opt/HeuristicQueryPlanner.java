@@ -66,6 +66,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
          // TODO: replace empty list aggfns
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
+         System.out.print(currentplan.toString());
       }
 
       if (data.groupByFields().isEmpty() && data.aggFnsFields().size() > 0) { // aggFn without groupBy clause
@@ -73,9 +74,37 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
       }
 
+
+      for(int i = 0; i < data.groupByFields().size(); i ++){
+         System.out.print(data.groupByFields().get(i).toString());
+         if(i != data.groupByFields().size() - 1){
+            System.out.print(" , ");
+         } else {
+            System.out.println();
+         }
+      }
+
+      for(int i = 0; i < data.aggFnsFields().size(); i ++){
+         System.out.print(data.aggFnsFields().get(i).toString());
+         if(i != data.aggFnsFields().size() - 1){
+            System.out.print(" , ");
+         } else {
+            System.out.println();
+         }
+      }
+
       //TODO include the distinctplan
       if(data.isDistinct()){
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
+         System.out.print(currentplan.toString());
+         for(int i = 0; i < data.fields().size() ; i ++){
+            System.out.print(data.fields().get(i).toString());
+            if(i != data.fields().size() - 1){
+               System.out.print(" , ");
+            } else {
+               System.out.println();
+            }
+         }
       }
 
       // Step 4.  Sort the table if there is an order by clause
