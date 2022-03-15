@@ -112,4 +112,6 @@ public class MultibufferProductPlan implements Plan {
       dest.close();
       return t;
    }
+
+   public String toString() { return "Cross Product : ";}
 }

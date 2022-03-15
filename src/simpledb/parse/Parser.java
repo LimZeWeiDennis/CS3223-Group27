@@ -15,7 +15,6 @@ public class Parser {
    private Lexer lex;
    
    public Parser(String s) {
-      System.out.println(s);
       lex = new Lexer(s);
    }
    
@@ -110,7 +109,6 @@ public class Parser {
    //method that creates a sort object
    public Sort sort() {
 
-      System.out.println("made into parser sort method");
       Expression fld = expression();
 
       String sortType = lex.eatSort();
@@ -122,7 +120,7 @@ public class Parser {
          lex.eatDelim(',');
          sort.conjoinWith(sort());
       }
-      System.out.println("made to the end of parser sort method");
+
       return sort;
    }
    

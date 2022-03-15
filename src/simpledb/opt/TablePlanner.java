@@ -23,6 +23,7 @@ class TablePlanner {
    private Schema myschema;
    private Map<String,IndexInfo> indexes;
    private Transaction tx;
+   private String tblname;
 
    /**
     * Creates a new table planner.
@@ -37,6 +38,7 @@ class TablePlanner {
    public TablePlanner(String tblname, Predicate mypred, Transaction tx, MetadataMgr mdm) {
       this.mypred  = mypred;
       this.tx  = tx;
+      this.tblname = tblname;
       myplan   = new TablePlan(tx, tblname, mdm);
       myschema = myplan.schema();
       indexes  = mdm.getIndexInfo(tblname, tx);
@@ -166,4 +168,6 @@ class TablePlanner {
       else
          return p;
    }
+
+   public String getTableName() {return tblname;}
 }

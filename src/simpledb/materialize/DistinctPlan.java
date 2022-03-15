@@ -23,7 +23,6 @@ public class DistinctPlan implements Plan {
      * @param tx the calling transaction
      */
     public DistinctPlan(Transaction tx, Plan p, List<String> fields) {
-        System.out.println("distinct plan in play");
         this.p = p;
         this.sch = p.schema();
         this.fields = fields;
@@ -88,4 +87,6 @@ public class DistinctPlan implements Plan {
     public Schema schema() {
         return sch;
     }
+
+    public String toString() { return "Distinct on ";}
 }

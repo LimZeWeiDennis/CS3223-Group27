@@ -20,10 +20,6 @@ public class SelectScan implements UpdateScan {
 	 * @param pred the selection predicate
 	 */
 	public SelectScan(Scan s, Predicate pred) {
-		System.out.println("select scan created");
-		System.out.println();
-		System.out.println(s);
-		System.out.println();
 		this.s = s;
 		this.pred = pred;
 	}

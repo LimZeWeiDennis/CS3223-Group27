@@ -99,4 +99,6 @@ public class GroupByPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+
+   public String toString() { return "Group by on ";}
 }

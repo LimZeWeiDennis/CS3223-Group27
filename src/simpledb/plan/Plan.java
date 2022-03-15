@@ -45,4 +45,11 @@ public interface Plan {
     * @return the query's schema
     */
    public Schema schema();
+
+   /**
+    * Returns a string containing the plan
+    * @return string containing plan
+    */
+
+   public String toString();
 }

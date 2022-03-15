@@ -26,7 +26,6 @@ public class Planner {
       Parser parser = new Parser(qry);
       QueryData data = parser.query();
       verifyQuery(data);
-      System.out.println("planner query done");
       return qplanner.createPlan(data, tx);
    }
    

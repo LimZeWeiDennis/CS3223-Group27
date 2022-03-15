@@ -95,8 +95,12 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
-      if (bestplan != null)
+      if (bestplan != null){
          tableplanners.remove(besttp);
+         tableplanners.remove(besttp);
+         System.out.println(bestplan.toString() + besttp.getTableName());
+      }
+
       return bestplan;
    }
    
@@ -111,6 +115,10 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
+      tableplanners.remove(besttp);
+      System.out.println(bestplan.toString() + besttp.getTableName());
+
+
       return bestplan;
    }
    
@@ -127,6 +135,8 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
+      System.out.println(bestplan.toString() + besttp.getTableName());
+
       return bestplan;
    }
 

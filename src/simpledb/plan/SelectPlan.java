@@ -83,4 +83,6 @@ public class SelectPlan implements Plan {
    public Schema schema() {
       return p.schema();
    }
+
+   public String toString(){ return p.toString(); }
 }
