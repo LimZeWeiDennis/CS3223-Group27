@@ -110,6 +110,18 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       // Step 4.  Sort the table if there is an order by clause
       currentplan = new SortPlan(tx, currentplan, data.sort());
 
+      if(data.sort().isSortOrder()){
+         System.out.print(currentplan.toString());
+         for(int i = 0; i < data.sort().getFlds().size(); i ++){
+            System.out.print(data.sort().getFlds().get(i).toString());
+            if( i != data.sort().getFlds().size() - 1){
+               System.out.print(" , ");
+            } else {
+               System.out.println();
+            }
+         }
+      }
+
       // Step 5.  Project on the field names and return
       return new ProjectPlan(currentplan, data.fields());
    }
