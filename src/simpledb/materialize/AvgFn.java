@@ -44,11 +44,11 @@ public class AvgFn implements AggregationFn {
     }
 
     /**
-     * Return the field's name, prepended by "avgof".
+     * Return the field's name, prepended by "avg(" and appended with ")".
      * @see simpledb.materialize.AggregationFn#fieldName()
      */
     public String fieldName() {
-        return "avgof" + fldname;
+        return "avg(" + fldname + ")";
     }
 
     /**

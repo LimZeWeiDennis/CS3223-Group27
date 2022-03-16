@@ -38,11 +38,11 @@ public class SumFn implements AggregationFn {
     }
 
     /**
-     * Return the field's name, prepended by "sumof".
+     * Return the field's name, prepended by "sum(" and appended with ")".
      * @see simpledb.materialize.AggregationFn#fieldName()
      */
     public String fieldName() {
-        return "sumof" + fldname;
+        return "sum(" + fldname + ")";
     }
 
     /**
