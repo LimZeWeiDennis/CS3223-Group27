@@ -66,31 +66,15 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
          // TODO: replace empty list aggfns
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
-         System.out.print(currentplan.toString());
+
+         System.out.println(currentplan.toString());
       }
 
       if (data.groupByFields().isEmpty() && data.aggFnsFields().size() > 0) { // aggFn without groupBy clause
          Sort s = new Sort(new ArrayList<>(), new ArrayList<>());
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
-      }
 
-
-      for(int i = 0; i < data.groupByFields().size(); i ++){
-         System.out.print(data.groupByFields().get(i).toString());
-         if(i != data.groupByFields().size() - 1){
-            System.out.print(" , ");
-         } else {
-            System.out.println();
-         }
-      }
-
-      for(int i = 0; i < data.aggFnsFields().size(); i ++){
-         System.out.print(data.aggFnsFields().get(i).toString());
-         if(i != data.aggFnsFields().size() - 1){
-            System.out.print(" , ");
-         } else {
-            System.out.println();
-         }
+         System.out.println(currentplan.toString());
       }
 
       //TODO include the distinctplan

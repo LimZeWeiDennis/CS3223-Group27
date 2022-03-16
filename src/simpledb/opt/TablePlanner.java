@@ -81,9 +81,13 @@ class TablePlanner {
       planList.add(productJoinPlan);
 
       for(Plan plan : planList){
+         System.out.println("comparing the blocks assessed for each join");
+         System.out.println(plan.toString());
+         System.out.println(plan.blocksAccessed());
          if(plan == null) continue;
          if (p == null || plan.blocksAccessed() < p.blocksAccessed()) {
             p = plan;
+
          }
       }
       return p;
