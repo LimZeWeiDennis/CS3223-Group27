@@ -20,6 +20,7 @@ import javax.swing.*;
 public class HeuristicQueryPlanner implements QueryPlanner {
    private Collection<TablePlanner> tableplanners = new ArrayList<>();
    private MetadataMgr mdm;
+   private String toPrint;
    
    public HeuristicQueryPlanner(MetadataMgr mdm) {
       this.mdm = mdm;
@@ -34,6 +35,8 @@ public class HeuristicQueryPlanner implements QueryPlanner {
     * results in the smallest output.
     */
    public Plan createPlan(QueryData data, Transaction tx) {
+
+      toPrint = "";
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
@@ -43,6 +46,9 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
+
+      toPrint += "{" + currentplan.toString() + "}";
+      System.out.println(toPrint);
       
       // Step 3:  Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
@@ -52,6 +58,8 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          else  // no applicable join
             currentplan = getLowestProductPlan(currentplan);
       }
+
+      System.out.println(toPrint);
 
       // Optional step: Do Group By (if not empty)
       if (!data.groupByFields().isEmpty()) {
@@ -67,7 +75,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          // TODO: replace empty list aggfns
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
 
-         System.out.println(currentplan.toString());
+         toPrint += currentplan.toString();
       }
 
       if (data.groupByFields().isEmpty() && data.aggFnsFields().size() > 0) { // aggFn without groupBy clause
@@ -77,27 +85,38 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          System.out.println(currentplan.toString());
       }
 
-      //TODO include the distinctplan
-      if(data.isDistinct()){
-         currentplan = new DistinctPlan(tx, currentplan, data.fields());
-         System.out.println(currentplan.toString());
-      }
+//      //TODO include the distinctplan
+//      if(data.isDistinct()){
+//         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+////         System.out.println(currentplan.toString());
+//      }
 
       // Step 4.  Sort the table if there is an order by clause
       currentplan = new SortPlan(tx, currentplan, data.sort());
 
       if(data.sort().isSortOrder()){
-         System.out.print(currentplan.toString());
-         for(int i = 0; i < data.sort().getFlds().size(); i ++){
-            System.out.print(data.sort().getFlds().get(i).toString());
-            if( i != data.sort().getFlds().size() - 1){
-               System.out.print(" , ");
-            } else {
-               System.out.println();
-            }
-         }
+         toPrint = "[sort" + toPrint + " by " + currentplan.toString();
       }
 
+      if(data.isDistinct()){
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+         toPrint = "project([" + currentplan.toString() + "])";
+      } else {
+         String start = "project([" ;
+
+         for(int i = 0; i < data.fields().size(); i ++){
+            start += data.fields().get(i);
+            if(i != data.fields().size() - 1){
+               start += " , ";
+            }
+         }
+         start += ")]";
+
+         toPrint = start + toPrint;
+      }
+
+
+      System.out.println(toPrint);
       // Step 5.  Project on the field names and return
       return new ProjectPlan(currentplan, data.fields());
    }
@@ -114,8 +133,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       }
       if (bestplan != null){
          tableplanners.remove(besttp);
-         tableplanners.remove(besttp);
-         System.out.println(bestplan.toString() + besttp.getTableName());
+         toPrint +=  bestplan.toString() + besttp.getTableName();
       }
 
       return bestplan;
@@ -132,9 +150,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
-      tableplanners.remove(besttp);
-      System.out.println(bestplan.toString() + besttp.getTableName());
-
 
       return bestplan;
    }
@@ -152,7 +167,8 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
-      System.out.println(bestplan.toString() + besttp.getTableName());
+      toPrint += bestplan.toString() + besttp.getTableName();
+
 
       return bestplan;
    }

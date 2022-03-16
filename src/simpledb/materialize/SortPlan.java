@@ -15,7 +15,7 @@ public class SortPlan implements Plan {
    private Plan p;
    private Schema sch;
    private RecordComparator comp;
-   
+   private Sort sort;
    /**
     * Create a sort plan for the specified query.
     * @param p the plan for the underlying query
@@ -27,6 +27,7 @@ public class SortPlan implements Plan {
       this.p = p;
       sch = p.schema();
       comp = new RecordComparator(sort);
+      this.sort = sort;
 
    }
    
@@ -168,5 +169,14 @@ public class SortPlan implements Plan {
    }
 
 
-   public String toString() { return "Sorted on ";}
+   public String toString() {
+      String res = "";
+      for(int i = 0; i < sort.getFlds().size() ; i ++){
+         res += sort.getFlds().get(i).toString();
+         res += " " + sort.getSortTypes().get(i).toString();
+         if(i != sort.getFlds().size() - 1){
+            res += " , ";
+         }
+      }
+      return res ;}
 }

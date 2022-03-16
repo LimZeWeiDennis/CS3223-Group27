@@ -89,5 +89,5 @@ public class IndexJoinPlan implements Plan {
       return sch;
    }
 
-   public String toString(){return "Index Join : ";}
+   public String toString(){return " index join ";}
 }

@@ -110,7 +110,7 @@ class TablePlanner {
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
             System.out.println("index on " + fldname + " used");
-            return new IndexSelectPlan(myplan, ii, val);
+            return new IndexSelectPlan(myplan, ii, val , tblname);
          }
       }
       return null;

@@ -113,5 +113,5 @@ public class MultibufferProductPlan implements Plan {
       return t;
    }
 
-   public String toString() { return "Cross Product : ";}
+   public String toString() { return " x ";}
 }

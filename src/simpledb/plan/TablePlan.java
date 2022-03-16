@@ -71,5 +71,5 @@ public class TablePlan implements Plan {
       return layout.schema();
    }
 
-   public String toString() { return "Scan : ";}
+   public String toString() { return "Scan " + tblname;}
 }
