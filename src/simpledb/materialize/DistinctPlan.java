@@ -30,20 +30,20 @@ public class DistinctPlan implements Plan {
     }
 
     /**
-     * This method opens a sort plan for the specified plan.
-     * The sort plan ensures that the underlying records
-     * will be appropriately grouped.
+     * This method opens a distinct plan for the specified plan.
+     * The distinct plan ensures that the underlying records
+     * will be unique.
      * @see simpledb.plan.Plan#open()
      */
     public Scan open() {
         Scan s = p.open(); // this should sort the table before grouping
-        return new DistinctScan(s, sch.fields(), fields); // TODO find out what is the right fields for the schema
+        return new DistinctScan(s, sch.fields(), fields);
     }
 
     /**
      * Return the number of blocks required to
-     * compute the aggregation,
-     * which is one pass through the sorted table.
+     * compute the distinct,
+     * which is one pass through the unique table.
      * It does <i>not</i> include the one-time cost
      * of materializing and sorting the records.
      * @see simpledb.plan.Plan#blocksAccessed()

@@ -96,7 +96,7 @@ public class QueryData {
 
    
    public String toString() {
-      String result = "select";
+      String result = "select ";
       for (Field orgSelect: originalSelect) {
          result += orgSelect.fieldName() + ", ";
       }

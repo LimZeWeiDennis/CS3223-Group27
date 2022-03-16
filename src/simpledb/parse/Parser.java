@@ -182,9 +182,7 @@ public class Parser {
 
       }
 
-      //TODO add in distinct boolean into the querydata
       return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields, isDistinct);
-//      return new QueryData(selectFields, tables, pred, groupByFields, aggFns, sort, fields);
    }
    
    private List<Field> selectList() {
@@ -196,27 +194,6 @@ public class Parser {
       }
       return L;
    }
-
-//   public Field selectField() { // previous checks ensures
-//      if (lex.matchAggFn()) {
-//         String aggType = lex.eatAgg();
-//         lex.eatDelim('(');
-//         String fldname = lex.eatId();
-//         lex.eatDelim(')');
-//         if (aggType.equals("sum")) { // previous checks ensures that a valid group by exists
-//            return new SumFn(fldname);
-//         } else if (aggType.equals("count")) {
-//            return new CountFn(fldname);
-//         } else if (aggType.equals("avg")) {
-//            return new AvgFn(fldname);
-//         } else if (aggType.equals("min")) {
-//            return new MinFn(fldname);
-//         } else { // max
-//            return new MaxFn(fldname);
-//         }
-//      }
-//      return new DefaultField(lex.eatId());
-//   }
    
    private Collection<String> tableList() {
       Collection<String> L = new ArrayList<String>();

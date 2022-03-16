@@ -6,7 +6,7 @@ import simpledb.query.*;
 
 
 /**
- * The <i>average</i> aggregation function.
+ * The <i>distinct</i> aggregation function.
  * @author Edward Sciore
  */
 public class DistinctAggFn implements AggregationFn {
@@ -14,7 +14,7 @@ public class DistinctAggFn implements AggregationFn {
     private Set<Constant> uniqueValues;
 
     /**
-     * Create an average aggregation function for the specified field.
+     * Create an distinct on the specified field, before aggregating.
      * @param fn the aggregate fn that needs to be distinct
      */
     public DistinctAggFn(AggregationFn fn) {
@@ -23,7 +23,7 @@ public class DistinctAggFn implements AggregationFn {
     }
 
     /**
-     * Start a new average.
+     * Start a new distinct.
      * Since SimpleDB does not support null values,
      * every record will be counted,
      * regardless of the field.
@@ -34,6 +34,8 @@ public class DistinctAggFn implements AggregationFn {
         Constant now = s.getVal(originalFieldName());
         uniqueValues.add(now);
         fn.processFirst(s);
+
+
     }
 
     /**
@@ -44,11 +46,16 @@ public class DistinctAggFn implements AggregationFn {
      */
     public void processNext(Scan s) {
         Constant constant = s.getVal(originalFieldName());
-        if (uniqueValues.contains(constant)) {
-            return;
+//        if (uniqueValues.contains(constant)) {
+//            return;
+//        }
+//        uniqueValues.add(constant);
+//        fn.processNext(s);
+
+        if (!uniqueValues.contains(constant)) {
+            uniqueValues.add(constant);
+            fn.processNext(s);
         }
-        uniqueValues.add(constant);
-        fn.processNext(s);
     }
 
     /**
