@@ -1,5 +1,6 @@
 package simpledb.materialize;
 
+import simpledb.multibuffer.BufferNeeds;
 import simpledb.plan.Plan;
 import simpledb.query.Scan;
 import simpledb.query.UpdateScan;
@@ -43,13 +44,14 @@ public class HashJoinPlan implements Plan {
      */
     public Scan open() {
         Scan s1 = lhs.open();
-        Scan s2 = rhs.open();
-
-        // Determines the max amount of partitions for this hash join (-1 for the input buffers)
-        int numOfPartitions = Math.max(1, tx.availableBuffs() - 1);
-
+        // Determines the max amount of partitions for this hash join based on the buffer needs
+        int numOfBlocks = (int) Math.ceil(lhs.recordsOutput() / (double) tx.blockSize());
+        int numOfPartitions = BufferNeeds.bestRoot(tx.availableBuffs(), numOfBlocks + 1);;
         List<TempTable> partition1 = partitionPlan(lhs.schema(), s1, fldname1, numOfPartitions);
+        s1.close();
+        Scan s2 = rhs.open();
         List<TempTable> partition2 = partitionPlan(rhs.schema(), s2, fldname2, numOfPartitions);
+        s2.close();
         return new HashJoinScan(partition1, partition2, fldname1, fldname2);
     }
 

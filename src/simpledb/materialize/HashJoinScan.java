@@ -16,7 +16,7 @@ public class HashJoinScan implements Scan {
     private HashMap<Integer, List<RID>> map;
     private int currPartIdx;
     private int currBucketElementIdx = 0; // To keep track of the current position element within the partition
-    private boolean hasMoreInPart2;
+    private boolean hasMoreInPart2 = true;
     private final int secondaryModulo;
     private RID startingS1Position;
 
@@ -46,7 +46,6 @@ public class HashJoinScan implements Scan {
         s2 = partition2.get(currPartIdx).open();
         s1.beforeFirst();
         s2.beforeFirst();
-        hasMoreInPart2 = s2.next();
     }
 
     /**
@@ -96,12 +95,12 @@ public class HashJoinScan implements Scan {
                 hasMoreInPart2 = s2.next();
                 continue;
             }
-                if (currBucketElementIdx == 0) {
-                    startingS1Position = s1.getRid();
-                }
-                s1.moveToRid(bucket.get(currBucketElementIdx));
-                currBucketElementIdx++;
-                return true;
+            if (currBucketElementIdx == 0) {
+                startingS1Position = s1.getRid();
+            }
+            s1.moveToRid(bucket.get(currBucketElementIdx));
+            currBucketElementIdx++;
+            return true;
         }
         return next();
     }

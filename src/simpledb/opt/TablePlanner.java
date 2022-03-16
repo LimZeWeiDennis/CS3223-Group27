@@ -76,10 +76,10 @@ class TablePlanner {
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
       Plan productJoinPlan = makeProductJoin(current, currsch);
       Plan hashJoinPlan = makeHashJoin(current, currsch, joinpred);
-//      planList.add(indexJoinPlan);
-//      planList.add(mergeJoinPlan);
+      planList.add(indexJoinPlan);
+      planList.add(mergeJoinPlan);
       planList.add(productJoinPlan);
-//      planList.add(hashJoinPlan);
+      planList.add(hashJoinPlan);
 
       for(Plan plan : planList){
          if(plan == null) continue;
@@ -127,8 +127,8 @@ class TablePlanner {
    }
 
    private Plan makeMergeJoin(Plan current ,Schema currsch, Predicate pred) {
-      //get the fieldname from the predicate
-      //get the list of fldnames from the schemas, loop through and see if fits into the predicate
+      // Get the fieldname from the predicate
+      // Get the list of fldnames from the schemas, loop through and see if fits into the predicate
       // currently working with only one join column
 
       for(String fldname: myschema.fields()){
