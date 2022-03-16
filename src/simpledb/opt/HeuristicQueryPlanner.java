@@ -59,8 +59,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             currentplan = getLowestProductPlan(currentplan);
       }
 
-      System.out.println(toPrint);
-
       // Optional step: Do Group By (if not empty)
       if (!data.groupByFields().isEmpty()) {
          List<Expression> exprs = new ArrayList<>();
@@ -95,7 +93,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       currentplan = new SortPlan(tx, currentplan, data.sort());
 
       if(data.sort().isSortOrder()){
-         toPrint = "[sort" + toPrint + " by " + currentplan.toString();
+         toPrint = "sort" + toPrint + " by " + currentplan.toString();
       }
 
       if(data.isDistinct()){
@@ -112,7 +110,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
          start += ")]";
 
-         toPrint = start + toPrint;
+         toPrint = start + "[" +  toPrint + "]";
       }
 
 
@@ -133,7 +131,8 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       }
       if (bestplan != null){
          tableplanners.remove(besttp);
-         toPrint +=  bestplan.toString() + besttp.getTableName();
+         System.out.println(bestplan.toString());
+         toPrint +=  bestplan.toString() + "{Scan " + besttp.getTableName() + "}";
       }
 
       return bestplan;
@@ -167,7 +166,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
-      toPrint += bestplan.toString() + besttp.getTableName();
+      toPrint += bestplan.toString() + "{ scan " + besttp.getTableName() + " }";
 
 
       return bestplan;
