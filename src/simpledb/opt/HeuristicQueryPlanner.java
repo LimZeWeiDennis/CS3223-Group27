@@ -80,15 +80,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       //TODO include the distinctplan
       if(data.isDistinct()){
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
-         System.out.print(currentplan.toString());
-         for(int i = 0; i < data.fields().size() ; i ++){
-            System.out.print(data.fields().get(i).toString());
-            if(i != data.fields().size() - 1){
-               System.out.print(" , ");
-            } else {
-               System.out.println();
-            }
-         }
+         System.out.println(currentplan.toString());
       }
 
       // Step 4.  Sort the table if there is an order by clause

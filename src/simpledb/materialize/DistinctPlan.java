@@ -88,5 +88,14 @@ public class DistinctPlan implements Plan {
         return sch;
     }
 
-    public String toString() { return "Distinct on ";}
+    public String toString() {
+        String res = "Distinct on ";
+        for(int i = 0; i < fields.size(); i ++){
+            res += fields.get(i).toString();
+            if(i != fields.size() -1 ){
+                res+= " , ";
+            }
+        }
+        return res;
+    }
 }

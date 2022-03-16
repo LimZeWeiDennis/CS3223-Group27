@@ -76,8 +76,8 @@ class TablePlanner {
       Plan indexJoinPlan = makeIndexJoin(current, currsch, joinpred);
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
       Plan productJoinPlan = makeProductJoin(current, currsch);
-      planList.add(indexJoinPlan);
-      planList.add(mergeJoinPlan);
+//      planList.add(indexJoinPlan);
+//      planList.add(mergeJoinPlan);
       planList.add(productJoinPlan);
 
       for(Plan plan : planList){
