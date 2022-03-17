@@ -66,7 +66,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          // Sort the table before performing group by
          Sort s = new Sort(exprs, sortTypes);
 
-         // TODO: replace empty list aggfns
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
 
       }
@@ -76,13 +75,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
       }
 
-//      //TODO include the distinctplan
-//      if(data.isDistinct()){
-//         currentplan = new DistinctPlan(tx, currentplan, data.fields());
-////         System.out.println(currentplan.toString());
-//      }
-
-
       if(data.sort().isSortOrder()){
          // Step 4.  Sort the table if there is an order by clause
          currentplan = new SortPlan(tx, currentplan, data.sort());
@@ -91,7 +83,6 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       if(data.isDistinct()){
          currentplan = new DistinctPlan(tx, currentplan, data.fields());
       }
-
 
       // Step 5.  Project on the field names and return
       currentplan = new ProjectPlan(currentplan, data.fields());
