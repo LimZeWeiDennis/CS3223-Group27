@@ -53,6 +53,16 @@ public class Parser {
    }
    
    public Expression expression() {
+
+      if(lex.matchAggFn()){
+         String aggType = lex.eatAgg();
+         lex.eatDelim('(');
+         String fldname = field();
+         lex.eatDelim(')');
+         String fieldName = aggType + "(" + fldname + ")";
+         return new Expression(fieldName);
+      }
+
       if (lex.matchId())
          return new Expression(field());
       else

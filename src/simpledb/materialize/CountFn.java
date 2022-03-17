@@ -41,11 +41,11 @@ public class CountFn implements AggregationFn {
    }
    
    /**
-    * Return the field's name, prepended by "countof".
+    * Return the field's name, prepended by "count(" and appended with ")".
     * @see simpledb.materialize.AggregationFn#fieldName()
     */
    public String fieldName() {
-      return "countof" + fldname;
+      return "count(" + fldname + ")";
    }
    
    /**
