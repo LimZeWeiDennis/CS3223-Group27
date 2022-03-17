@@ -9,7 +9,6 @@ import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 
 public class BlockNestedLoopScan implements Scan {
-
     private Transaction tx;
     private Scan rhsScan; // Scan for the rhs table
     private Scan lhsBlockScan; // Scan for the current block
@@ -22,15 +21,15 @@ public class BlockNestedLoopScan implements Scan {
 
     private final int CHUNK_SIZE;
 
-    public BlockNestedLoopScan(Transaction tx, Scan rhsScan, String lhsTableName, Layout lhsLayout, Predicate joinPredicate) {
+    public BlockNestedLoopScan(Transaction tx, Scan rhsScan, String lhsTableName, Layout lhsLayout, Predicate joinPredicate, int numBuffers) {
         this.tx = tx;
         this.rhsScan = rhsScan;
         this.lhsTableName = lhsTableName;
         this.lhsLayout = lhsLayout;
-        this.lhsTableSize = tx.size(lhsTableName + ".tbl");
+        this.lhsTableSize = tx.size(this.lhsTableName + ".tbl");
         this.joinPredicate = joinPredicate;
-//        System.out.println("Available buffers: " + tx.availableBuffs());
-        CHUNK_SIZE = 1; // -2 for output buffer and buffer to hold S
+
+        CHUNK_SIZE = numBuffers;
 
         beforeFirst();
     }
@@ -71,6 +70,7 @@ public class BlockNestedLoopScan implements Scan {
     }
 
     public Constant getVal(String fldname) {
+        System.out.println(fldname);
         return joinedScan.getVal(fldname);
     }
 
@@ -79,15 +79,7 @@ public class BlockNestedLoopScan implements Scan {
     }
 
     public void close() {
-        System.out.println("JoinedScan closed");
         joinedScan.close();
-        if (lhsBlockScan != null) {
-            lhsBlockScan.close();
-        }
-        if (rhsScan != null) {
-            rhsScan.close();
-        }
-        System.out.println("JoinedScan fin closing");
     }
 
     private boolean useNextBlock() {
@@ -95,12 +87,11 @@ public class BlockNestedLoopScan implements Scan {
             return false;
         if (lhsBlockScan != null) {
             lhsBlockScan.close();
-            System.out.println("LHS Scan closed");
         }
-        lhsBlockScan = new ChunkScan(tx, lhsTableName, lhsLayout, nextBlock, nextBlock + CHUNK_SIZE - 1); // get next block (chunk)
+        lhsBlockScan = new ChunkScan(tx, lhsTableName + ".tbl", lhsLayout, nextBlock, nextBlock + CHUNK_SIZE - 1); // get next block (chunk)
         rhsScan.beforeFirst(); // reposition right pointer to start of right table
         joinedScan = new ProductScan(lhsBlockScan, rhsScan);
-        nextBlock += CHUNK_SIZE + 1;
+        nextBlock += CHUNK_SIZE;
         return true;
     }
 }

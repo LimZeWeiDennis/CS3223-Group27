@@ -75,7 +75,7 @@ class TablePlanner {
       Plan indexJoinPlan = makeIndexJoin(current, currsch, joinpred);
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
       Plan productJoinPlan = makeProductJoin(current, currsch);
-      Plan nestedLoopJoinPlan = makeNestedLoopJoin(current, joinpred);
+      Plan nestedLoopJoinPlan = makeNestedLoopJoin(current, joinpred, 2);
       planList.add(indexJoinPlan);
       planList.add(mergeJoinPlan);
       planList.add(productJoinPlan);
@@ -101,8 +101,8 @@ class TablePlanner {
       return new MultibufferProductPlan(tx, current, p);
    }
 
-   private Plan makeNestedLoopJoin(Plan current, Predicate joinpred) {
-      Plan p = new BlockNestedLoopPlan(tx, myplan, current, joinpred);
+   private Plan makeNestedLoopJoin(Plan current, Predicate joinpred, int numBuffers) {
+      Plan p = new BlockNestedLoopPlan(tx, myplan, current, joinpred, numBuffers);
       p = addSelectPred(p);
       p = addJoinPred(p, current.schema());
       return p;

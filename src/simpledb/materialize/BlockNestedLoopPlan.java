@@ -13,12 +13,14 @@ public class BlockNestedLoopPlan implements Plan {
     private Plan lhs, rhs;
     private Schema schema = new Schema();
     private Predicate pred;
+    private int numBuffers;
 
-    public BlockNestedLoopPlan(Transaction tx, Plan lhs, Plan rhs, Predicate pred) {
+    public BlockNestedLoopPlan(Transaction tx, Plan lhs, Plan rhs, Predicate pred, int numBuffers) {
         this.tx = tx;
         this.lhs = lhs;
         this.rhs = rhs;
         this.pred = pred;
+        this.numBuffers = numBuffers;
         schema.addAll(lhs.schema());
         schema.addAll(rhs.schema());
     }
@@ -26,7 +28,7 @@ public class BlockNestedLoopPlan implements Plan {
     public Scan open() {
         TempTable tt = copyRecordsFrom(lhs);
         Scan rhsScan = rhs.open();
-        return new BlockNestedLoopScan(tx, rhsScan, tt.tableName(), tt.getLayout(), pred);
+        return new BlockNestedLoopScan(tx, rhsScan, tt.tableName(), tt.getLayout(), pred, numBuffers);
     }
 
     /**
@@ -34,7 +36,7 @@ public class BlockNestedLoopPlan implements Plan {
      * @return number of page (block) accesses
      */
     public int blocksAccessed() {
-        int avail = tx.availableBuffs();
+        int avail = 2;
         int size = new MaterializePlan(tx, lhs).blocksAccessed();
         int numchunks = (int) Math.ceil(size / avail);
         return lhs.blocksAccessed() + (numchunks * rhs.blocksAccessed());
