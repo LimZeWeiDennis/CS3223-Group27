@@ -170,13 +170,5 @@ public class SortPlan implements Plan {
 
 
    public String toString() {
-      String res = "";
-      for(int i = 0; i < sort.getFlds().size() ; i ++){
-         res += sort.getFlds().get(i).toString();
-         res += " " + sort.getSortTypes().get(i).toString();
-         if(i != sort.getFlds().size() - 1){
-            res += " , ";
-         }
-      }
-      return res ;}
+      return String.format("sort by (%s) %s", p.toString(), sort.toString());}
 }

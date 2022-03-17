@@ -84,4 +84,6 @@ public class MaterializePlan implements Plan {
    public Schema schema() {
       return srcplan.schema();
    }
+
+   public String toString() {return String.format("materialize(%s)", srcplan.toString()); }
 }

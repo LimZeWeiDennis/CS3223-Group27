@@ -81,9 +81,7 @@ class TablePlanner {
       planList.add(productJoinPlan);
 
       for(Plan plan : planList){
-         System.out.println("comparing the blocks assessed for each join");
-         System.out.println(plan.toString());
-         System.out.println(plan.blocksAccessed());
+
          if(plan == null) continue;
          if (p == null || plan.blocksAccessed() < p.blocksAccessed()) {
             p = plan;
@@ -148,7 +146,6 @@ class TablePlanner {
    }
    
    private Plan makeProductJoin(Plan current, Schema currsch) {
-      System.out.println("using product plan now");
       Plan p = makeProductPlan(current);
       return addJoinPred(p, currsch);
    }
@@ -174,4 +171,6 @@ class TablePlanner {
    }
 
    public String getTableName() {return tblname;}
+
+   public String getPredicate() {return mypred.toString();}
 }

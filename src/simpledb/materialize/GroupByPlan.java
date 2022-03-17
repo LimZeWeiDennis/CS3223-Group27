@@ -101,25 +101,6 @@ public class GroupByPlan implements Plan {
    }
 
    public String toString() {
-      String res = "";
-
-      if(groupfields.size() > 0){
-         res += "Group by ";
-      }
-
-      for(int i = 0; i < groupfields.size(); i ++){
-         res += "[" + groupfields.get(i) + "]";
-         if(i != groupfields.size() - 1){
-            res += " to ";
-         }
-      }
-
-//      for(int i = 0; i < aggfns.size(); i ++){
-//         res += aggfns.get(i).toString();
-//         if(i != aggfns.size() - 1){
-//            res += "\n";
-//         }
-//      }
-
-      return res ;}
+      return String.format("%s group by %s%s",
+              p.toString(), groupfields.toString(), aggfns.isEmpty() ? "" : " aggregate to " + aggfns);}
 }

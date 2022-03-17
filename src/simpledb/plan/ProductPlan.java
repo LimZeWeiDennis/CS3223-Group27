@@ -1,5 +1,6 @@
 package simpledb.plan;
 
+import simpledb.materialize.MaterializePlan;
 import simpledb.query.ProductScan;
 import simpledb.query.Scan;
 import simpledb.record.Schema;
@@ -76,4 +77,7 @@ public class ProductPlan implements Plan {
    public Schema schema() {
       return schema;
    }
+
+   public String toString() {
+      return String.format(" {%s} cross product {%s} ", p1.toString(), p2.toString());}
 }

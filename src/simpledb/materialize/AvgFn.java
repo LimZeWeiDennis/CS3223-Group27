@@ -70,8 +70,8 @@ public class AvgFn implements AggregationFn {
         return true;
     }
 
-    public String toString(){ return "Average of :" +  originalFieldName();}
+    public String toString(){ return "Avg {" +  originalFieldName() + "}";}
 
-    public String toStringDistinct(){ return "Average of unique :" +  originalFieldName();}
+    public String toStringDistinct(){ return "Avg { distinct" +  originalFieldName() + "}";}
 }
 

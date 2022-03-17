@@ -65,7 +65,7 @@ public class MinFn implements AggregationFn {
         return true;
     }
 
-    public String toString(){ return "Min of :" +  originalFieldName();}
+    public String toString(){ return "Min {" +  originalFieldName() + "}";}
 
-    public String toStringDistinct(){ return "Min of unique :" +  originalFieldName();}
+    public String toStringDistinct(){ return "Min { distinct" +  originalFieldName() + "}";}
 }

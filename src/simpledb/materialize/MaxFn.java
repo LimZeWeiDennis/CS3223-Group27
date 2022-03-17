@@ -65,7 +65,7 @@ public class MaxFn implements AggregationFn {
       return true;
    }
 
-   public String toString(){ return "Max of :" +  originalFieldName();}
+   public String toString(){ return "Max {" +  originalFieldName() + "}";}
 
-   public String toStringDistinct(){ return "Max of unique :" +  originalFieldName();}
+   public String toStringDistinct(){ return "Max { distinct" +  originalFieldName() + "}";}
 }
