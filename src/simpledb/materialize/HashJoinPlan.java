@@ -125,4 +125,10 @@ public class HashJoinPlan implements Plan {
     public Schema schema() {
         return sch;
     }
+
+
+    public String toString(){
+        return String.format("[{%s} hash join ](%s = %s)",
+                lhs.toString(), rhs.toString(), fldname1, fldname2);
+    }
 }
