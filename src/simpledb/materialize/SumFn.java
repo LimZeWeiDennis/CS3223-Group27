@@ -46,6 +46,12 @@ public class SumFn implements AggregationFn {
     }
 
     /**
+     * Return the field's original name
+     * @see simpledb.materialize.AggregationFn#fieldName()
+     */
+    public String originalFieldName() {return fldname;}
+
+    /**
      * Return the current sum.
      * @see simpledb.materialize.AggregationFn#value()
      */
@@ -57,4 +63,8 @@ public class SumFn implements AggregationFn {
     public boolean isAggregate() {
         return true;
     }
+
+    public String toString(){ return "Sum {" +  originalFieldName() + "}";}
+
+    public String toStringDistinct(){ return "Sum { distinct" +  originalFieldName() + "}";}
 }

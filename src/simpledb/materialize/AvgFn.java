@@ -51,6 +51,13 @@ public class AvgFn implements AggregationFn {
         return "avg(" + fldname + ")";
     }
 
+
+    /**
+     * Return the field's original name
+     * @see simpledb.materialize.AggregationFn#fieldName()
+     */
+    public String originalFieldName() {return fldname;}
+
     /**
      * Return the current average score.
      * @see simpledb.materialize.AggregationFn#value()
@@ -62,5 +69,9 @@ public class AvgFn implements AggregationFn {
     public boolean isAggregate() {
         return true;
     }
+
+    public String toString(){ return "Avg {" +  originalFieldName() + "}";}
+
+    public String toStringDistinct(){ return "Avg { distinct" +  originalFieldName() + "}";}
 }
 

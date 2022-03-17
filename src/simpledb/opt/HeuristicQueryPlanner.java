@@ -34,6 +34,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
     * results in the smallest output.
     */
    public Plan createPlan(QueryData data, Transaction tx) {
+
       
       // Step 1:  Create a TablePlanner object for each mentioned table
       for (String tblname : data.tables()) {
@@ -43,6 +44,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
       
       // Step 2:  Choose the lowest-size plan to begin the join order
       Plan currentplan = getLowestSelectPlan();
+
       
       // Step 3:  Repeatedly add a plan to the join order
       while (!tableplanners.isEmpty()) {
@@ -66,6 +68,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
 
          // TODO: replace empty list aggfns
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
+
       }
 
       if (data.groupByFields().isEmpty() && data.aggFnsFields().size() > 0) { // aggFn without groupBy clause
@@ -73,11 +76,27 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          currentplan = new GroupByPlan(tx, currentplan, data.groupByFields(), data.aggFnsFields(), s);
       }
 
-      // Step 4.  Sort the table if there is an order by clause
-      currentplan = new SortPlan(tx, currentplan, data.sort());
+//      //TODO include the distinctplan
+//      if(data.isDistinct()){
+//         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+////         System.out.println(currentplan.toString());
+//      }
+
+
+      if(data.sort().isSortOrder()){
+         // Step 4.  Sort the table if there is an order by clause
+         currentplan = new SortPlan(tx, currentplan, data.sort());
+      }
+
+      if(data.isDistinct()){
+         currentplan = new DistinctPlan(tx, currentplan, data.fields());
+      }
+
 
       // Step 5.  Project on the field names and return
-      return new ProjectPlan(currentplan, data.fields());
+      currentplan = new ProjectPlan(currentplan, data.fields());
+      System.out.println(currentplan.toString());
+      return currentplan;
    }
 
    private Plan getLowestJoinPlan(Plan current) {
@@ -90,8 +109,10 @@ public class HeuristicQueryPlanner implements QueryPlanner {
             bestplan = plan;
          }
       }
-      if (bestplan != null)
+      if (bestplan != null){
          tableplanners.remove(besttp);
+      }
+
       return bestplan;
    }
    
@@ -106,6 +127,7 @@ public class HeuristicQueryPlanner implements QueryPlanner {
          }
       }
       tableplanners.remove(besttp);
+
       return bestplan;
    }
    

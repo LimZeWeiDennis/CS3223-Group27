@@ -99,4 +99,8 @@ public class GroupByPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+
+   public String toString() {
+      return String.format("%s group by %s%s",
+              p.toString(), groupfields.toString(), aggfns.isEmpty() ? "" : " aggregate to " + aggfns);}
 }

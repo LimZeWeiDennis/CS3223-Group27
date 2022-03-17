@@ -18,12 +18,13 @@ public class QueryData {
    private List<AggregationFn> aggFns;
    private List<Field> originalSelect;
    private Sort sort;
+   private boolean isDistinct;
    
    /**
     * Saves the field and table list and predicate.
     */
    public QueryData(List<String> fields, Collection<String> tables, Predicate pred, List<String> groupByFields,
-                    List<AggregationFn> aggFns, Sort sort, List<Field> originalSelect) {
+                    List<AggregationFn> aggFns, Sort sort, List<Field> originalSelect, boolean isDistinct) {
       this.fields = fields;
       this.tables = tables;
       this.pred = pred;
@@ -31,6 +32,8 @@ public class QueryData {
       this.aggFns = aggFns;
       this.sort = sort;
       this.originalSelect = originalSelect;
+      this.isDistinct = isDistinct;
+
    }
    
    /**
@@ -72,6 +75,14 @@ public class QueryData {
     */
    public List<AggregationFn> aggFnsFields() {
       return aggFns;
+   }
+
+   /**
+    * Returns if the select result is distinct.
+    * @return true if select result is disctinct.
+    */
+   public boolean isDistinct() {
+      return isDistinct;
    }
 
    /**

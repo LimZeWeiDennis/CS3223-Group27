@@ -96,5 +96,8 @@ public class MergeJoinPlan implements Plan {
    public Schema schema() {
       return sch;
    }
+
+   public String toString(){
+      return String.format("{%s} mergejoin {%s} on (%s)", p1.toString(), p2.toString(), fldname1 + " , "+ fldname2);}
 }
 

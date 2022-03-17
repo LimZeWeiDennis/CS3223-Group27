@@ -85,15 +85,16 @@ public class Sort {
 
 
     public String toString() {
-        Iterator<Expression> iter = flds.iterator();
-        if(!iter.hasNext()) {
-            return "";
+
+        String sout = "";
+        for(int i = 0; i < flds.size(); i ++){
+            sout += flds.get(i) + " " + sortTypes.get(i);
+            if(i != flds.size() -1){
+                sout += " , ";
+            }
         }
-        String result = iter.next().toString();
-        while(iter.hasNext()){
-            result += "," + iter.next().toString();
-        }
-        return result;
-//        return fld.asFieldName() + " " + sortType;
+
+        return sout;
+
     }
 }

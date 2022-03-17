@@ -54,7 +54,7 @@ public class IndexJoinPlan implements Plan {
     * @see simpledb.plan.Plan#blocksAccessed()
     */
    public int blocksAccessed() {
-      return p1.blocksAccessed() 
+      return p1.blocksAccessed()
          + (p1.recordsOutput() * ii.blocksAccessed())
          + recordsOutput();
    }
@@ -87,5 +87,10 @@ public class IndexJoinPlan implements Plan {
     */
    public Schema schema() {
       return sch;
+   }
+
+   public String toString(){
+      return String.format("[{%s} indexjoin {index (%s) using %s}](%s=%s)",
+              p1.toString(), p2.toString(), ii.getFieldName(), joinfield, ii.getFieldName());
    }
 }

@@ -112,4 +112,7 @@ public class MultibufferProductPlan implements Plan {
       dest.close();
       return t;
    }
+
+   public String toString() {
+      return String.format(" {%s} cross product {%s} ", lhs.toString(), new MaterializePlan(tx, rhs).toString());}
 }
