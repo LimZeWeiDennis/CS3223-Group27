@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import simpledb.materialize.BlockNestedLoopPlan;
+import simpledb.materialize.HashJoinPlan;
 import simpledb.materialize.MergeJoinPlan;
 import simpledb.tx.Transaction;
 import simpledb.record.*;
@@ -71,24 +73,26 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = null;
+      Plan bestPlan = null;
       List<Plan> planList = new ArrayList<>();
       Plan indexJoinPlan = makeIndexJoin(current, currsch, joinpred);
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
       Plan productJoinPlan = makeProductJoin(current, currsch);
+      Plan nestedLoopJoinPlan = makeNestedLoopJoin(current, joinpred, 2);
+      Plan hashJoinPlan = makeHashJoin(current, currsch, joinpred);
       planList.add(indexJoinPlan);
       planList.add(mergeJoinPlan);
       planList.add(productJoinPlan);
+      planList.add(nestedLoopJoinPlan);
+      planList.add(hashJoinPlan);
 
       for(Plan plan : planList){
-
          if(plan == null) continue;
-         if (p == null || plan.blocksAccessed() < p.blocksAccessed()) {
-            p = plan;
-
+         if (bestPlan == null || plan.blocksAccessed() < bestPlan.blocksAccessed()) {
+            bestPlan = plan;
          }
       }
-      return p;
+      return bestPlan;
    }
    
    /**
@@ -101,7 +105,14 @@ class TablePlanner {
       Plan p = addSelectPred(myplan);
       return new MultibufferProductPlan(tx, current, p);
    }
-   
+
+   private Plan makeNestedLoopJoin(Plan current, Predicate joinpred, int numBuffers) {
+      Plan p = new BlockNestedLoopPlan(tx, myplan, current, joinpred, numBuffers);
+      p = addSelectPred(p);
+      p = addJoinPred(p, current.schema());
+      return p;
+   }
+
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
          Constant val = mypred.equatesWithConstant(fldname);
@@ -128,8 +139,8 @@ class TablePlanner {
    }
 
    private Plan makeMergeJoin(Plan current ,Schema currsch, Predicate pred) {
-      //get the fieldname from the predicate
-      //get the list of fldnames from the schemas, loop through and see if fits into the predicate
+      // Get the fieldname from the predicate
+      // Get the list of fldnames from the schemas, loop through and see if fits into the predicate
       // currently working with only one join column
 
       for(String fldname: myschema.fields()){
@@ -142,6 +153,19 @@ class TablePlanner {
          }
       }
 
+      return null;
+   }
+
+   private Plan makeHashJoin(Plan current ,Schema currsch, Predicate pred) { // makes a hashjoin based on a common join pred
+      for(String fldname: myschema.fields()){
+         String outerfield = pred.equatesWithField(fldname);
+         if(outerfield != null && currsch.hasField(outerfield)){
+            Plan p = new HashJoinPlan(tx, myplan, current, fldname, outerfield);
+            p = addSelectPred(p);
+            p = addJoinPred(p, currsch);
+            return p;
+         }
+      }
       return null;
    }
    
@@ -159,7 +183,7 @@ class TablePlanner {
    }
 
    /*
-   *returns a plan if the predicate holds on both schemas
+    * Returns a plan if the predicate holds on both schemas
     */
    private Plan addJoinPred(Plan p, Schema currsch) {
       //checks and creates a predicate based on the schema of the plan and myscheme

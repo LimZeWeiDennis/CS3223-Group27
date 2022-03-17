@@ -39,11 +39,11 @@ public class MaxFn implements AggregationFn {
    }
    
    /**
-    * Return the field's name, prepended by "maxof".
+    * Return the field's name, prepended by "max(" and appended with ")".
     * @see simpledb.materialize.AggregationFn#fieldName()
     */
    public String fieldName() {
-      return "maxof" + fldname;
+      return "max(" + fldname + ")";
    }
 
    /**

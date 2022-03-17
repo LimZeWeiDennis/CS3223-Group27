@@ -28,15 +28,14 @@ public class SortScan implements Scan {
     */
    public SortScan(List<TempTable> runs, RecordComparator comp) {
       this.comp = comp;
-
-      s1 = (UpdateScan) runs.get(0).open();
-      hasmore1 = s1.next();
-      if (runs.size() > 1) {
-         s2 = (UpdateScan) runs.get(1).open();
-         hasmore2 = s2.next();
+      if(runs.size() > 0){
+         s1 = (UpdateScan) runs.get(0).open();
+         hasmore1 = s1.next();
+         if (runs.size() > 1) {
+            s2 = (UpdateScan) runs.get(1).open();
+            hasmore2 = s2.next();
+         }
       }
-
-
    }
    
    /**
@@ -91,8 +90,8 @@ public class SortScan implements Scan {
     * @see simpledb.query.Scan#close()
     */
    public void close() {
-
-      s1.close();
+      if(s1 != null)
+         s1.close();
       if (s2 != null)
          s2.close();
 

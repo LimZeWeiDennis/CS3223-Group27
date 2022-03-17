@@ -67,7 +67,8 @@ public class Lexer {
     * @return true if the current token is an identifier
     */
    public boolean matchId() {
-      return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval);
+
+      return  tok.ttype==StreamTokenizer.TT_WORD && !keywords.contains(tok.sval) ;
    }
 
    /**
@@ -307,4 +308,5 @@ public class Lexer {
                                "on", "using", "order", "by", "asc", "desc", "sum", "count",
                                "avg", "min", "max", "group", "distinct");
    }
+
 }

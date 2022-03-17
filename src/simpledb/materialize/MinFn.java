@@ -39,11 +39,11 @@ public class MinFn implements AggregationFn {
     }
 
     /**
-     * Return the field's name, prepended by "minof".
+     * Return the field's name, prepended by "min(" and appended with ")".
      * @see simpledb.materialize.AggregationFn#fieldName()
      */
     public String fieldName() {
-        return "minof" + fldname;
+        return "min(" + fldname + ")";
     }
 
     /**
