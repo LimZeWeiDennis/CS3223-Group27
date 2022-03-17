@@ -35,8 +35,6 @@ public class SortScan implements Scan {
          s2 = (UpdateScan) runs.get(1).open();
          hasmore2 = s2.next();
       }
-
-
    }
    
    /**

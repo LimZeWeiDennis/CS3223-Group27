@@ -29,7 +29,9 @@ public class BlockNestedLoopScan implements Scan {
         this.lhsLayout = lhsLayout;
         this.lhsTableSize = tx.size(lhsTableName + ".tbl");
         this.joinPredicate = joinPredicate;
-        CHUNK_SIZE = tx.availableBuffs() - 2; // -2 for output buffer and buffer to hold S
+//        System.out.println("Available buffers: " + tx.availableBuffs());
+        CHUNK_SIZE = 1; // -2 for output buffer and buffer to hold S
+
         beforeFirst();
     }
 
@@ -48,7 +50,7 @@ public class BlockNestedLoopScan implements Scan {
      * @see Scan#next()
      */
     public boolean next() {
-        // Move to next chunk
+        // If this crosspdt finished, move to next chunk
         while (!joinedScan.next()) {
             if (!useNextBlock()) { // Finished looping over left table
                 return false;
@@ -77,15 +79,25 @@ public class BlockNestedLoopScan implements Scan {
     }
 
     public void close() {
+        System.out.println("JoinedScan closed");
         joinedScan.close();
+        if (lhsBlockScan != null) {
+            lhsBlockScan.close();
+        }
+        if (rhsScan != null) {
+            rhsScan.close();
+        }
+        System.out.println("JoinedScan fin closing");
     }
 
     private boolean useNextBlock() {
         if (nextBlock >= lhsTableSize)
             return false;
-        if (lhsBlockScan != null)
+        if (lhsBlockScan != null) {
             lhsBlockScan.close();
-        lhsBlockScan = new ChunkScan(tx, lhsTableName, lhsLayout, nextBlock, nextBlock + CHUNK_SIZE); // get next block (chunk)
+            System.out.println("LHS Scan closed");
+        }
+        lhsBlockScan = new ChunkScan(tx, lhsTableName, lhsLayout, nextBlock, nextBlock + CHUNK_SIZE - 1); // get next block (chunk)
         rhsScan.beforeFirst(); // reposition right pointer to start of right table
         joinedScan = new ProductScan(lhsBlockScan, rhsScan);
         nextBlock += CHUNK_SIZE + 1;
