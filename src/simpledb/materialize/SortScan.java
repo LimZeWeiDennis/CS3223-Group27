@@ -36,7 +36,6 @@ public class SortScan implements Scan {
             hasmore2 = s2.next();
          }
       }
-
    }
    
    /**

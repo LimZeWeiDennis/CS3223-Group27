@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import simpledb.materialize.BlockNestedLoopPlan;
 import simpledb.materialize.HashJoinPlan;
 import simpledb.materialize.MergeJoinPlan;
 import simpledb.tx.Transaction;
@@ -70,24 +71,26 @@ class TablePlanner {
       Predicate joinpred = mypred.joinSubPred(myschema, currsch);
       if (joinpred == null)
          return null;
-      Plan p = null;
+      Plan bestPlan = null;
       List<Plan> planList = new ArrayList<>();
       Plan indexJoinPlan = makeIndexJoin(current, currsch, joinpred);
       Plan mergeJoinPlan = makeMergeJoin(current, currsch, joinpred);
       Plan productJoinPlan = makeProductJoin(current, currsch);
+      Plan nestedLoopJoinPlan = makeNestedLoopJoin(current, joinpred, 2);
       Plan hashJoinPlan = makeHashJoin(current, currsch, joinpred);
       planList.add(indexJoinPlan);
       planList.add(mergeJoinPlan);
       planList.add(productJoinPlan);
+      planList.add(nestedLoopJoinPlan);
       planList.add(hashJoinPlan);
 
       for(Plan plan : planList){
          if(plan == null) continue;
-         if (p == null || plan.blocksAccessed() < p.blocksAccessed()) {
-            p = plan;
+         if (bestPlan == null || plan.blocksAccessed() < bestPlan.blocksAccessed()) {
+            bestPlan = plan;
          }
       }
-      return p;
+      return bestPlan;
    }
    
    /**
@@ -99,6 +102,13 @@ class TablePlanner {
    public Plan makeProductPlan(Plan current) {
       Plan p = addSelectPred(myplan);
       return new MultibufferProductPlan(tx, current, p);
+   }
+
+   private Plan makeNestedLoopJoin(Plan current, Predicate joinpred, int numBuffers) {
+      Plan p = new BlockNestedLoopPlan(tx, myplan, current, joinpred, numBuffers);
+      p = addSelectPred(p);
+      p = addJoinPred(p, current.schema());
+      return p;
    }
    
    private Plan makeIndexSelect() {
