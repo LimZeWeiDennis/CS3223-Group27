@@ -8,6 +8,11 @@ import simpledb.query.Scan;
 import simpledb.record.Layout;
 import simpledb.tx.Transaction;
 
+/**
+ * The Scan class for the <i>nestedloopjoin</i> operator.
+ *
+ * @author Tan Jia Wei Joe
+ */
 public class BlockNestedLoopScan implements Scan {
     private Transaction tx;
     private Scan rhsScan; // Scan for the rhs table
@@ -21,6 +26,15 @@ public class BlockNestedLoopScan implements Scan {
 
     private final int CHUNK_SIZE;
 
+    /**
+     * Creates the scan class for the nested loop join of the LHS scan and a table.
+     * @param rhsScan the RHS scan
+     * @param lhsTableName the name of the LHS table
+     * @param lhsLayout the metadata for the LHS table
+     * @param joinPredicate the joining predicate
+     * @param tx the current transaction
+     * @param numBuffers the number of buffers to use to store the block of the LHS table
+     */
     public BlockNestedLoopScan(Transaction tx, Scan rhsScan, String lhsTableName, Layout lhsLayout, Predicate joinPredicate, int numBuffers) {
         this.tx = tx;
         this.rhsScan = rhsScan;
@@ -36,6 +50,7 @@ public class BlockNestedLoopScan implements Scan {
 
     /**
      * Positions the pointer on the LHS table to the start of the first block.
+     * Positions the pointer on the RHS table to the start of the table.
      */
     public void beforeFirst() {
         nextBlock = 0;
@@ -43,8 +58,8 @@ public class BlockNestedLoopScan implements Scan {
     }
 
     /**
-     * Moves to the next record in the current scan.
-     * If there are no more records in the current chunk,
+     * Moves to the next record in the current LHS block.
+     * If there are no more records in the current block,
      * then move to the next LHS block and the beginning of the RHS scan.
      * @see Scan#next()
      */
@@ -61,27 +76,58 @@ public class BlockNestedLoopScan implements Scan {
         return true;
     }
 
+    /**
+     * Returns the integer value of the specified field.
+     * The value is obtained from whichever scan
+     * contains the field.
+     * @see simpledb.query.Scan#getInt(java.lang.String)
+     */
     public int getInt(String fldname) {
         return joinedScan.getInt(fldname);
     }
 
+    /**
+     * Returns the string value of the specified field.
+     * The value is obtained from whichever scan
+     * contains the field.
+     * @see simpledb.query.Scan#getString(java.lang.String)
+     */
     public String getString(String fldname) {
         return joinedScan.getString(fldname);
     }
 
+    /**
+     * Returns the value of the specified field.
+     * The value is obtained from whichever scan
+     * contains the field.
+     * @see simpledb.query.Scan#getVal(java.lang.String)
+     */
     public Constant getVal(String fldname) {
         System.out.println(fldname);
         return joinedScan.getVal(fldname);
     }
 
+    /**
+     * Returns true if the specified field is in
+     * either of the underlying scans.
+     * @see simpledb.query.Scan#hasField(java.lang.String)
+     */
     public boolean hasField(String fldname) {
         return joinedScan.hasField(fldname);
     }
 
+    /**
+     * Closes the scan by closing the underlying product scan.
+     */
     public void close() {
         joinedScan.close();
     }
 
+    /**
+     * Moves to the next block in the LHS table and opens a new ChunkScan.
+     * The new ChunkScan is then used as part of the ProductScan with the RHS table.
+     * Closes the scan for the previous block, if it exists.
+     */
     private boolean useNextBlock() {
         if (nextBlock >= lhsTableSize)
             return false;
