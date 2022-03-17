@@ -82,7 +82,7 @@ class TablePlanner {
       Plan hashJoinPlan = makeHashJoin(current, currsch, joinpred);
       planList.add(indexJoinPlan);
       planList.add(mergeJoinPlan);
-//      planList.add(productJoinPlan);
+      planList.add(productJoinPlan);
       planList.add(nestedLoopJoinPlan);
       planList.add(hashJoinPlan);
 
