@@ -116,4 +116,9 @@ public class BlockNestedLoopPlan implements Plan {
         dest.close();
         return t;
     }
+
+    public String toString(){
+        return String.format("[{%s} block-nested loop join ](%s)",
+                lhs.toString(), rhs.toString(), pred.toString());
+    }
 }
