@@ -36,9 +36,8 @@ public class BlockNestedLoopPlan implements Plan {
      * @return number of page (block) accesses
      */
     public int blocksAccessed() {
-        int avail = 2;
         int size = new MaterializePlan(tx, lhs).blocksAccessed();
-        int numchunks = (int) Math.ceil(size / avail);
+        int numchunks = (int) Math.ceil(size / numBuffers);
         return lhs.blocksAccessed() + (numchunks * rhs.blocksAccessed());
     }
 

@@ -109,7 +109,6 @@ public class ChunkScan implements Scan {
    private void moveToBlock(int blknum) {
       currentbnum = blknum;
       rp = buffs.get(currentbnum - startbnum);
-
       currentslot = -1;
    }
 }
