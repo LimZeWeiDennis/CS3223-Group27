@@ -141,8 +141,10 @@ public class Term {
    public boolean appliesTo(Schema sch) {
       return lhs.appliesTo(sch) && rhs.appliesTo(sch);
    }
+
+   public String getComparator(){return comparator;}
    
    public String toString() {
-      return lhs.toString() + "=" + rhs.toString();
+      return lhs.toString() + comparator + rhs.toString();
    }
 }
