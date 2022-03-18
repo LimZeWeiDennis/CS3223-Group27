@@ -116,6 +116,12 @@ class TablePlanner {
    private Plan makeIndexSelect() {
       for (String fldname : indexes.keySet()) {
          Constant val = mypred.equatesWithConstant(fldname);
+         Term term = mypred.equatesWithConstantGetTerm(fldname);
+
+         //skips creating an index plan since it does not allow non-equi join
+         if(term != null && term.getComparator() != "="){
+            return null;
+         }
          if (val != null) {
             IndexInfo ii = indexes.get(fldname);
             System.out.println("index on " + fldname + " used");
