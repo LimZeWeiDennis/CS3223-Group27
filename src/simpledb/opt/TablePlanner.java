@@ -3,6 +3,7 @@ package simpledb.opt;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import simpledb.materialize.BlockNestedLoopPlan;
 import simpledb.materialize.HashJoinPlan;
@@ -134,6 +135,12 @@ class TablePlanner {
    private Plan makeIndexJoin(Plan current, Schema currsch, Predicate pred) {
       for (String fldname : indexes.keySet()) {
          String outerfield = pred.equatesWithField(fldname);
+         Term term = pred.equatesWithFieldGetOpr(fldname);
+
+         //skips creating an index plan since it does not allow non-equi join
+         if(term != null && !Objects.equals(term.getComparator(), "=")){
+            continue;
+         }
          if (outerfield != null && currsch.hasField(outerfield)) {
             IndexInfo ii = indexes.get(fldname);
             Plan p = new IndexJoinPlan(current, myplan, ii, outerfield);
@@ -151,6 +158,12 @@ class TablePlanner {
 
       for(String fldname: myschema.fields()){
          String outerfield = pred.equatesWithField(fldname);
+         Term term = pred.equatesWithFieldGetOpr(fldname);
+
+         //skips creating an index plan since it does not allow non-equi join
+         if(term != null && !Objects.equals(term.getComparator(), "=")){
+            continue;
+         }
          if(outerfield != null && currsch.hasField(outerfield)){
             Plan p = new MergeJoinPlan(tx, myplan, current, fldname, outerfield);
             p = addSelectPred(p);
@@ -165,6 +178,12 @@ class TablePlanner {
    private Plan makeHashJoin(Plan current ,Schema currsch, Predicate pred) { // makes a hashjoin based on a common join pred
       for(String fldname: myschema.fields()){
          String outerfield = pred.equatesWithField(fldname);
+         Term term = pred.equatesWithFieldGetOpr(fldname);
+
+         //skips creating an index plan since it does not allow non-equi join
+         if(term != null && !Objects.equals(term.getComparator(), "=")){
+            continue;
+         }
          if(outerfield != null && currsch.hasField(outerfield)){
             Plan p = new HashJoinPlan(tx, myplan, current, fldname, outerfield);
             p = addSelectPred(p);

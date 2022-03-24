@@ -15,6 +15,7 @@ public class MergeJoinPlan implements Plan {
    private Plan p1, p2;
    private String fldname1, fldname2;
    private Schema sch = new Schema();
+   Transaction tx;
    
    /**
     * Creates a mergejoin plan for the two specified queries.
@@ -32,6 +33,7 @@ public class MergeJoinPlan implements Plan {
 
       this.fldname2 = fldname2;
       this.p2 = new SortPlan(tx, p2, new Sort(new Expression(fldname2), "asc"));
+      this.tx = tx;
       
       sch.addAll(p1.schema());
       sch.addAll(p2.schema());
@@ -60,7 +62,8 @@ public class MergeJoinPlan implements Plan {
     * @see simpledb.plan.Plan#blocksAccessed()
     */
    public int blocksAccessed() {
-      return p1.blocksAccessed() + p2.blocksAccessed();
+      return (int) (2 * (Math.log(p1.blocksAccessed() / Math.log(tx.availableBuffs() - 1) + Math.log(p2.blocksAccessed())
+              / Math.log(tx.availableBuffs() - 1)) + p1.blocksAccessed() + p2.blocksAccessed()));
    }
    
    /**

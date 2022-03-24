@@ -55,8 +55,7 @@ public class IndexJoinPlan implements Plan {
     */
    public int blocksAccessed() {
       return p1.blocksAccessed()
-         + (p1.recordsOutput() * ii.blocksAccessed())
-         + recordsOutput();
+         + (p1.recordsOutput() * ii.blocksAccessed());
    }
    
    /**

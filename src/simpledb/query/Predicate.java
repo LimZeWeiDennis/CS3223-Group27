@@ -154,6 +154,15 @@ public class Predicate {
       return null;
    }
 
+   public Term equatesWithFieldGetOpr(String fldname) {
+      for (Term t : terms) {
+         String s = t.equatesWithField(fldname);
+         if (s != null)
+            return t;
+      }
+      return null;
+   }
+
    public String toString() {
       Iterator<Term> iter = terms.iterator();
       if (!iter.hasNext()) 
